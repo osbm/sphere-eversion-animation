@@ -37,7 +37,8 @@ var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-new OrbitControls(camera, renderer.domElement);
+var orbit_controls = new OrbitControls(camera, renderer.domElement);
+orbit_controls.enablePan = false;
 
 
 // add a plane with color and outline
