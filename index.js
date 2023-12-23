@@ -1,10 +1,31 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'jsm/controls/OrbitControls.js';
+import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm';
+
+
 
 var scene = new THREE.Scene();
+const gui = new GUI();
+
+
+var obj = {
+    pauseTime: true,
+    time: 0,
+}
+
+gui.add(obj, 'time', 0, 1).listen();
+gui.add(obj, 'pauseTime')
 
 // set scene background color to rgb(20, 25, 40)
 scene.background = new THREE.Color(0x141928);
+
+
+const light = new THREE.PointLight(0xffffff, 10)
+light.position.set(10, 10, 10)
+scene.add(light)
+const ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
+scene.add( ambientLight );
+
 
 var camera = new THREE.PerspectiveCamera(
     75, // fov = field of view
@@ -18,39 +39,39 @@ document.body.appendChild(renderer.domElement);
 
 new OrbitControls(camera, renderer.domElement);
 
-// var geometry = new THREE.BoxGeometry();
-// var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-// var cube = new THREE.Mesh(geometry, material);
-// scene.add(cube);
 
 // add a plane with color and outline
-var geometry = new THREE.PlaneGeometry(5, 5, 5);
-var green = new THREE.MeshBasicMaterial({
+var geometry = new THREE.SphereGeometry(1, 32, 32);
+var front_material = new THREE.MeshStandardMaterial({
     color: 0x00ff00,
-    wireframe: false,
+    // wireframe: true,
+    side: THREE.FrontSide,
     opacity: 0.5,
 });
 
-var blue = new THREE.MeshBasicMaterial({
+var back_material = new THREE.MeshStandardMaterial({
     color: 0x0000ff,
-    wireframe: false,
+    // wireframe: true,
+    side: THREE.BackSide,
     opacity: 0.5,
 });
 
+var wireframe_material = new THREE.MeshStandardMaterial({
+    color: 0x000000,
+    wireframe: true,
+    opacity: 0.5,
+    side: THREE.DoubleSide,
+    // opacity: 0.5,
+});
 
-var plane1 = new THREE.Mesh(geometry, green);
+var inner_sphere = new THREE.Mesh(geometry, back_material);
+var outer_sphere = new THREE.Mesh(geometry, front_material);
+var wireframe = new THREE.Mesh(geometry, wireframe_material);
 
 
-// now add another plane that is blue and is exactly the same as the first plane but rotated 180 degrees so that it looks like 1 plane that is blue on one side and green on the other
-var plane2 = new THREE.Mesh(geometry, blue);
-
-
-plane2.rotation.y = Math.PI;
-
-
-
-scene.add(plane1);
-scene.add(plane2);
+scene.add(inner_sphere);
+scene.add(outer_sphere);
+scene.add(wireframe);
 
 
 camera.position.z = 5;
@@ -60,9 +81,13 @@ function animate() {
     requestAnimationFrame(animate);
 
     // Rotate the cube
-    plane1.rotation.y += 0.01;
-    plane2.rotation.y += 0.01;
+    inner_sphere.rotation.y += 0.01;
+    outer_sphere.rotation.y += 0.01;
+    wireframe.rotation.y += 0.01;
     
+    if (obj.pauseTime == false) {
+        obj.time = (obj.time + 0.005) % 1;
+    }
 
     renderer.render(scene, camera);
 }
