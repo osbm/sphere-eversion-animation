@@ -313,6 +313,10 @@ class ThreeJet {
         x1 * this.fuvv + x2 * (2 * this.fv * this.fuv +   this.fu * this.fvv) + x3 * this.fu * this.fv * this.fv,
       );
     }
+
+    get_two_jet () { // returns TwoJet
+      return new TwoJet(this.f, this.fu, this.fv, this.fuv);
+    }
 }
 
 class TwoJetVec {
@@ -354,6 +358,15 @@ class TwoJetVec {
       this.z.annihilate(index)
     );
   }
+
+  derivative_vec(index) {
+    return new TwoJetVec(
+      this.x.derivative(index),
+      this.y.derivative(index),
+      this.z.derivative(index)
+    );
+  }
+  
 
   cross(other) {
     return new TwoJetVec(

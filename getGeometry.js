@@ -1,111 +1,256 @@
 import * as THREE from 'three';
 import { TwoJet, ThreeJet, TwoJetVec, ThreeJetVec } from './jets.js';
 
+function FigureEight(w, h, bend, form, v) { // returns TwoJetVec
+    v = v.opeartorModulo(1);
 
+    var height = v.operatorMultiplyScalar(2).operatorCos().operatorPlusScalar(-1).operatorMultiplyScalar(-1);
+    if (v.f > 0.25 && v.f < 0.75) {
+        height = height.operatorMultiplyScalar(-1).operatorPlusScalar(4);
+    }
+    height = height.operatorMultiplyScalar(0.6);
 
-function sqr (x) {
-    return x * x;
+    h = h.operatorPlus(bend.operatorMultiply(height.operatorMultiply(height).operatorMultiplyScalar(1/64)));
+
+    const term1 = w.operatorMultiply(v.operatorMultiplyScalar(2).operatorSin());
+    const term2 = h.operatorMultiply(v.operatorCos().operatorPlusScalar(-1).operatorMultiplyScalar(-2).interpolate(height, form));
+
+    return term1.operatorPlus(term2);
 }
 
+function AddFigureEight(
+    p,         // ThreeJetVec
+    u,         // ThreeJet
+    v,         // TwoJet
+    form,      // ThreeJet
+    scale,     // ThreeJet
+    num_strips // int
+) {
+    var size = form.operatorMultiply(scale); // ThreeJet
+    form = form.operatorMultiplyScalar(2).operatorPlus(form.operatorMultiply(form).operatorMultiplyScalar(-1));
+    var dv = p.derivative_vec(1).annihilate_vec(1); // TwoJetVec
+    p = p.annihilate_vec(1);
+    var du = p.derivative_vec(0).normalize(); // TwoJetVec
+    var h = du.cross(dv).normalize().operatorMultiply(size.get_two_jet()); // TwoJetVec
+    var w = h.cross(du).normalize().operatorMultiply(size.get_two_jet().operatorMultiplyScalar(1.1)); // TwoJetVec
+
+    var figure_eight = FigureEight(
+        w,
+        h,
+        du.operatorMultiply(size.derivative(0).operatorMultiply(du.derivative_vec(0).operatorPower(-1))),
+        form,
+        v
+    ); // TwoJetVec
+
+    return p.operatorPlus(figure_eight).rotate_z(v.operatorMultiplyScalar(1/num_strips));
+}
+
+function Arc(u, v, xsize, ysize, zsize) { // returns ThreeJetVec
+    u = u.operatorMultiplyScalar(0.25);
+
+    return new ThreeJetVec(
+        u.operatorSin().operatorMultiply(v.operatorSin()).operatorMultiplyScalar(xsize),
+        u.operatorSin().operatorMultiply(v.operatorCos()).operatorMultiplyScalar(ysize),
+        u.operatorCos().operatorMultiplyScalar(zsize)
+    );
+}
+
+function Straight (u, v, xsize, ysize, zsize) { // returns ThreeJetVec
+    u = u.operatorMultiplyScalar(0.25);
+
+    return new ThreeJetVec(
+        v.operatorSin().operatorMultiplyScalar(xsize),
+        v.operatorCos().operatorMultiplyScalar(ysize),
+        u.operatorCos().operatorMultiplyScalar(zsize)
+    );
+}
+
+function Param1(x) {
+    var offset = 0;
+    x = x.operatorModulo(4);
+    if (x.f > 2) {
+        x = x.operatorPlusScalar(-2);
+        offset = 2;
+    }
+    if (x.f <= 1) {
+        return x.operatorMultiplyScalar(2).operatorPlus(x.operatorPower(2).operatorMultiplyScalar(-1)).operatorPlusScalar(offset); // x*2 + (x^2)*(-1) + offset;
+    } else {
+        return x.operatorPower(2).operatorPlus(x.operatorMultiplyScalar(-2)).operatorPlusScalar(2 + offset); // (x^2) + x*(-2) + (2 + offset)
+    }
+}
+
+function Param2(x) {
+    var offset = 0;
+    x = x.operatorModulo(4);
+
+    if (x.f > 2) {
+        x = x.operatorPlusScalar(-2);
+        offset = 2;
+    }
+
+    if (x.f <= 1) {
+        return x.operatorPower(2).operatorPlusScalar(offset); // (x^2) + offset
+    } else {
+        // (x^2)*(-1) + x*4 + (-2 + offset)
+        return x.operatorPower(2).operatorMultiplyScalar(-1).operatorPlus(x.operatorMultiplyScalar(4)).operatorPlusScalar(-2 + offset);
+    }
+}
+
+function TInterp(x) {
+    return new ThreeJet(x, 0, 0);
+}
+
+function UInterp(x) {
+    x = x.operatorModulo(2);
+
+    if (x.f > 1) {
+        x = x.operatorMultiplyScalar(-1).operatorPlusScalar(2);
+    }
+
+    return x.operatorPower(2).operatorMultiplyScalar(3).operatorPlus(x.operatorPower(3).operatorMultiplyScalar(-2)); // (x^2)*3 + (x^3) * (-2);
+}
+
+function FFInterp(x) {
+    var FFPOW = 3;
+    x = x.operatorModulo(2);
+    if (x.f > 2) {
+        x = x.operatorMultiplyScalar(-1).operatorPlusScalar(2);
+    }
+    x = x.operatorMultiplyScalar(1.06).operatorPlusScalar(-0.03);
+    if (x.f < 0) {
+        return new ThreeJet(0, 0, 0);
+    } else if (x.f > 1) {
+        return new ThreeJet(0, 0, 0).operatorPlusScalar(1);
+    } else {
+        return x.operatorPower(FFPOW - 1).operatorMultiplyScalar(FFPOW).operatorPlus(x.operatorPower(FFPOW).operatorMultiplyScalar(-FFPOW + 1)); // (x ^ (FFPOW-1)) * (FFPOW) + (x^FFPOW) * (-FFPOW+1)
+    }
+}
+
+function FSInterp(x) {
+    var FSPOW = 3;
+    x = x.operatorModulo(2);
+    if (x.f > 1) {
+        x = x.operatorMultiplyScalar(-1).operatorPlusScalar(2);
+    }
+    return x.operatorPower(FSPOW - 1).operatorMultiplyScalar(FSPOW).operatorPlus(x.operatorPower(FSPOW).operatorMultiplyScalar(-FSPOW + 1)).operatorMultiplyScalar(-0.2); // ((x ^ (FSPOW-1)) * (FSPOW) + (x^FSPOW) * (-FSPOW+1)) * (-0.2);
+}
+
+function Stage0(u, v) {
+    return Straight(u, v, 1, 1, 1);
+}
+
+function Stage1(u, v) {
+    return Arc(u, v, 1, 1, 1);
+}
+
+function Stage2(u, v) {
+    var arc_one = Arc(Param1(u), v, 0.9, 0.9, -1);
+    var arc_two = Arc(Param2(u), v, 1, 1, 0.5);
+    return arc_one.interpolate_vec(arc_two, UInterp(u));
+}
+
+function Stage3(u, v) {
+    var arc_one = Arc(Param1(u), v, -0.9, -0.9, -1);
+    var arc_two = Arc(Param2(u), v, -1, 1, -0.5);
+    return arc_one.interpolate_vec(arc_two, UInterp(u));
+}
+
+function Stage4(u, v) {
+    return Arc(u, v, -1, -1, -1);
+}
+
+function Scene01(u, v, time) {
+    return Stage0(u, v).interpolate_vec(Stage1(u, v), TInterp(time));
+}
+
+function Scene12(u, v, time) {
+    return Stage1(u, v).interpolate_vec(Stage2(u, v), TInterp(time));
+}
+
+function Scene23(u, v, time) {
+    var tmp = TInterp(time);
+    t = tmp.f * 0.5; // what the fuck ?? whyyy
+
+    // double tt = (u <= 1) ? t : -t;
+    var tt = (u.f <= 1) ? t : -t;
+
+    var vector_one = Arc(Param1(u), v, 0.9, 0.9,-1).rotate_z(new ThreeJet(tt, 0, 0))
+    var vector_two = Arc(Param2(u), v, 1, 1, 0.5).rotate_y(new ThreeJet(t, 0, 0))
+
+    return vector_one.interpolate_vec(vector_two, UInterp(u))
+}
+
+function Scene34(u, v, time) {
+    return Stage3(u, v).interpolate_vec(Stage4(u, v), TInterp(time));
+}
+
+function BendIn(u, v, time, num_strips) {
+    var tmp = TInterp(time);
+    t = tmp.f; // unnecessary
+
+    return AddFigureEight(
+        Scene01(u, ThreeJet(0, 0, 1), t),
+        u, v, ThreeJet(0,0,0), FSInterp(u),
+        num_strips,
+    )
+}
+
+function Corrugate(u, v, t, num_strips) {
+    var tmp = TInterp(t)
+    t = tmp.f;
+
+    return AddFigureEight(
+        Stage1(u, new ThreeJet(0,0,1)),
+        u, v, FFInterp(u).operatorMultiply(new ThreeJet(t, 0, 0)), FSInterp(u),
+        num_strips
+    )
+}
+
+function PushThrough(u, v, t, num_strips) {
+    return AddFigureEight(
+        Scene12(u, new ThreeJet(0,0,1), t),
+        u, v, FFInterp(u), FSInterp(u),
+        num_strips
+    )
+}
+
+function Twist(u, v, t, num_strips) {
+    return AddFigureEight(
+        Scene23(u, new ThreeJet(0,0,1), t),
+        u, v, FFInterp(u), FSInterp(u),
+        num_strips
+    )
+}
+
+function Unpush(u, v, t, num_strips) {
+    return AddFigureEight(
+        Scene34(u, new ThreeJet(0,0,1), t),
+        u, v, FFInterp(u), FSInterp(u),
+        num_strips
+    )
+}
+
+function UnCorrugate(u, v, t, num_strips) {
+    var tmp = TInterp(t);
+    t = tmp.f;
+
+    return AddFigureEight(
+        Stage4(u, new ThreeJet(0,0,1)),
+        u, v, FFInterp(u).operatorMultiply(new ThreeJet(t, 0, 0)), FSInterp(u),
+        num_strips
+    )
+}
+
+function sqr(x) {
+    return x * x;
+}
+  
 function calcSpeedV(v) {
-    return Math.sqrt(sqr(v.x.df_dv()) + sqr(v.y.df_dv()) + sqr(v.z.df_dv()));
+    return Math.sqrt(sqr(v.x.fv) + sqr(v.y.fv) + sqr(v.z.fv));
 }
 
 function calcSpeedU(u) {
-    return Math.sqrt(sqr(u.x.df_du()) + sqr(u.y.df_du()) + sqr(u.z.df_du()));
-}
-
-
-function FFInterp(x, FFPOW=3) { // What the fuck
-    x %= 2;
-    if (x > 2)
-        x = x * (-1) + 2;
-    x = x*1.06 + - 0.03;
-    if (x < 0)
-        return ThreeJet(0,0,0);
-    else if (x < 1)
-        return ThreeJet(0,0,0) + 1;
-    else
-        return (x ^ (FFPOW-1)) * (FFPOW) + (x^FFPOW) * (-FFPOW+1);
-}
-
-function FSInterp (x, FSPOW=3) {
-    x %= 2;
-    if (x > 1)
-        x = x*(-1) + 2;
-    return ((x ^ (FSPOW-1)) * (FSPOW) + (x^FSPOW) * (-FSPOW+1)) * (-0.2);
-}
-
-
-function TInterp (x) { // unnecessary function
-    return new ThreeJet(x, 0, 0)
-}
-
-function FigureEight(w, h, bend, form, v) { // returns TwoJetVec
-    var height; // TwoJet
-    v %= 1;
-
-    height = (Cos(v*2) - 1) * -1 ;
-    if (v > 0.25 && v < 0.75) {
-        height = height * -1 + 4;
-    }
-
-    height = height*0.6;
-    h = h + bend*(height*height*(1/64.0));
-    return w*Sin (v*2) + (h) * (Interpolate((Cos (v) - 1) * (-2), height, form));
-}
-
-
-
-function AddFigureEight( // returns TwoJetVec , also what the fuck
-    p,          // ThreeJetVec
-    u,          // ThreeJet
-    v,          // TwoJet
-    form,       // ThreeJet
-    scale,      // ThreeJet
-    num_strips, // int
-) {
-
-    var size = form * scale; // ThreeJet
-    form = form*2 + form*form-1;
-    var dv = AnnihilateVec(D(p, 1), 1); // TwoJetVec
-    p = AnnihilateVec(p, 1);
-
-    var du = Normalize(D(p, 0)); // TwoJetVec
-
-    var h = Normalize(Cross(du, dv))*TwoJet(size); // TwoJetVec
-    var w = Normalize(Cross(h, du))* (TwoJet(size) * 1.1); // TwoJetVec
-    return RotateZ(
-        TwoJetVec(p) + FigureEight(w, h, du*D(size, 0)*(D(u, 0)^(-1)), form, v),
-        v*(1.0/num_strips)
-    )
-}
-
-function Arc (u, v, xsize, ysize, zsize) {
-    var result = new ThreeJetVec();
-
-    u = u * 0.25; // or dividing by 4 ?
-    result.x = Math.sin (u) * Math.sin (v) * xsize;
-    result.y = Math.sin (u) * Math.cos (v) * ysize;
-    result.z = Math.cos (u) * zsize;
-    return result;
-}
-
-
-function Stage1 (u, v) { // unnecessary wrapper 
-    return Arc(u,v, 1, 1, 1)
-}
-
-function Corrugate(u, v, time, num_strips) { // returns TwoJetVec
-    var tmp = TInterp(time); // returns ThreeJet
-    var t = tmp.f;
-
-    return AddFigureEight(
-        Stage1(u, new ThreeJet(0, 0, 1)),
-        u, v, FFInterp(u) * new ThreeJet(t,0,0), FSInterp(u),
-        num_strips
-    )
-
+    return Math.sqrt(sqr(u.x.fu) + sqr(u.y.fu) + sqr(u.z.fu));
 }
 
 
@@ -140,7 +285,7 @@ function calculate_geometry_array(func, geometry, time, u_min, u_max, u_count, v
         }
     }
 
-
+    return values
 
 }
 
@@ -168,7 +313,7 @@ export function getGeometry(time=0, radius=5, number_of_segments=32, number_of_r
     }
     else if ((time > 0.1) && (time <= 0.23)) { // Push
         geometry_array = calculate_geometry_array(
-            push,
+            PushThrough,
             geometry,
             (time - 0.1) / (0.23 - 0.1),
             u_min, u_max, u_count,
@@ -178,7 +323,7 @@ export function getGeometry(time=0, radius=5, number_of_segments=32, number_of_r
     }
     else if ((time > 0.23) && (time <= 0.6)) { // Twist
         geometry_array = calculate_geometry_array(
-            twist,
+            Twist,
             geometry,
             (time - 0.23) / (0.6 - 0.23),
             u_min, u_max, u_count,
@@ -188,7 +333,7 @@ export function getGeometry(time=0, radius=5, number_of_segments=32, number_of_r
     }
     else if ((time > 0.6) && (time <= 0.93)) { // Unpush
         geometry_array = calculate_geometry_array(
-            unpush,
+            Unpush,
             geometry,
             (time - 0.6) / (0.93 - 0.6),
             u_min, u_max, u_count,
@@ -198,7 +343,7 @@ export function getGeometry(time=0, radius=5, number_of_segments=32, number_of_r
     }
     else if ((time > 0.93) && (time <= 1.0)) { // Uncorrugate
         geometry_array = calculate_geometry_array(
-            uncorrugate,
+            UnCorrugate,
             geometry,
             (time - 0.93) / (1.0 - 0.93),
             u_min, u_max, u_count,
