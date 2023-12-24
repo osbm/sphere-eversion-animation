@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'jsm/controls/OrbitControls.js';
 import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm';
 
+import { getGeometry } from './getGeometry.js';
 
 
 var scene = new THREE.Scene();
@@ -77,9 +78,18 @@ scene.add(wireframe);
 
 camera.position.z = 5;
 
+var sphere_geometry = inner_sphere.geometry.getAttribute('position');
+console.log(sphere_geometry.array);
+
 // Create a simple animation loop
 function animate() {
     requestAnimationFrame(animate);
+
+    var geometry = getGeometry(obj.time);
+    inner_sphere.geometry = geometry;
+    outer_sphere.geometry = geometry;
+    wireframe.geometry = geometry;
+
 
     // Rotate the cube
     inner_sphere.rotation.y += 0.01;
