@@ -3,8 +3,9 @@ import { OrbitControls } from 'jsm/controls/OrbitControls.js';
 import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm';
 
 import { getGeometry } from './getGeometry.js';
-
-
+// var result = getGeometry(0.0)
+// console.log(result.length);
+// console.log(result);
 var scene = new THREE.Scene();
 const gui = new GUI();
 
@@ -78,14 +79,25 @@ scene.add(wireframe);
 
 camera.position.z = 5;
 
-var sphere_geometry = inner_sphere.geometry.getAttribute('position');
-console.log(sphere_geometry.array);
+// var sphere_geometry = inner_sphere.geometry.getAttribute('position');
+// console.log(sphere_geometry.array);
 
 // Create a simple animation loop
 function animate() {
     requestAnimationFrame(animate);
 
-    var geometry = getGeometry(obj.time);
+    var coordinates = getGeometry(obj.time);
+
+    var polyshape = new THREE.Shape(coordinates.map((coord) => {
+        return new THREE.Vector2(coord.x, coord.y);
+    }));
+
+    var geometry = new THREE.ShapeGeometry(polyshape);
+
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(coordinates.map(coord => [coord.x, coord.y, coord.z]).flat(), 3))
+
+
+
     inner_sphere.geometry = geometry;
     outer_sphere.geometry = geometry;
     wireframe.geometry = geometry;

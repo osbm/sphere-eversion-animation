@@ -1,8 +1,9 @@
-import * as THREE from 'three';
+// import * as THREE from 'three';
 import { TwoJet, ThreeJet, TwoJetVec, ThreeJetVec } from './jets.js';
 
+
 function FigureEight(w, h, bend, form, v) { // returns TwoJetVec
-    v = v.opeartorModulo(1);
+    v = v.operatorModulo(1);
 
     var height = v.operatorMultiplyScalar(2).operatorCos().operatorPlusScalar(-1).operatorMultiplyScalar(-1);
     if (v.f > 0.25 && v.f < 0.75) {
@@ -37,7 +38,7 @@ function AddFigureEight(
     var figure_eight = FigureEight(
         w,
         h,
-        du.operatorMultiply(size.derivative(0).operatorMultiply(du.derivative_vec(0).operatorPower(-1))),
+        du.operatorMultiply(size.derivative(0)).operatorMultiply(u.derivative(0).operatorPower(-1)),
         form,
         v
     ); // TwoJetVec
@@ -169,7 +170,7 @@ function Scene12(u, v, time) {
 
 function Scene23(u, v, time) {
     var tmp = TInterp(time);
-    t = tmp.f * 0.5; // what the fuck ?? whyyy
+    var t = tmp.f * 0.5; // what the fuck ?? whyyy
 
     // double tt = (u <= 1) ? t : -t;
     var tt = (u.f <= 1) ? t : -t;
@@ -186,7 +187,7 @@ function Scene34(u, v, time) {
 
 function BendIn(u, v, time, num_strips) {
     var tmp = TInterp(time);
-    t = tmp.f; // unnecessary
+    var t = tmp.f; // unnecessary
 
     return AddFigureEight(
         Scene01(u, ThreeJet(0, 0, 1), t),
@@ -254,7 +255,7 @@ function calcSpeedU(u) {
 }
 
 
-function calculate_geometry_array(func, geometry, time, u_min, u_max, u_count, v_min, v_max, v_count, num_strips) {
+function calculate_geometry_array(func, time, u_min, u_max, u_count, v_min, v_max, v_count, num_strips) {
     var j, k, u, v, delta_u, delta_v;
     var values = [];
 
@@ -285,26 +286,47 @@ function calculate_geometry_array(func, geometry, time, u_min, u_max, u_count, v
         }
     }
 
-    return values
+    // let coordinates = [
+    //     {
+    //       x : 1,
+    //       y : 1,
+    //       z: 10
+        // },
+    
+    //  turn the values into 1d array of dictionaries
+    //  each dictionary has x, y, z
+   
+    var coordinates = [];
+    for (j = 0; j <= u_count; j++) {
+        for (k = 0; k <= v_count; k++) {
+            coordinates.push({
+                x: values[j][k].x.f,
+                y: values[j][k].y.f,
+                z: values[j][k].z.f
+            });
+        }
+    }
+
+
+    return coordinates; // 13 x 13 x 3
 
 }
 
 
-export function getGeometry(time=0, radius=5, number_of_segments=32, number_of_rings=32, num_strips=8, u_min=0, u_max=1, u_count=12, v_min=0, v_max=1, v_count=12) {
+function getGeometry(time=0, radius=5, number_of_segments=32, number_of_rings=32, num_strips=8, u_min=0, u_max=1, u_count=12, v_min=0, v_max=1, v_count=12) {
     if ((0.0 > time) && (time > 1.0)) {
         console.log("Error: time must be between 0 and 1");
         // raise error
         throw "Error: time must be between 0 and 1";
     }
 
-    var geometry = new THREE.SphereGeometry(radius, number_of_segments, number_of_rings);
+    // var geometry = new THREE.SphereGeometry(radius, number_of_segments, number_of_rings);
 
-
+    var geometry_array;
 
     if ((time => 0.0) && (time <= 0.1)) { // corrugation
         geometry_array = calculate_geometry_array(
             Corrugate,
-            geometry,
             (time - 0.0) / (0.1 - 0.0),
             u_min, u_max, u_count,
             v_min, v_max, v_count,
@@ -314,7 +336,6 @@ export function getGeometry(time=0, radius=5, number_of_segments=32, number_of_r
     else if ((time > 0.1) && (time <= 0.23)) { // Push
         geometry_array = calculate_geometry_array(
             PushThrough,
-            geometry,
             (time - 0.1) / (0.23 - 0.1),
             u_min, u_max, u_count,
             v_min, v_max, v_count,
@@ -324,7 +345,6 @@ export function getGeometry(time=0, radius=5, number_of_segments=32, number_of_r
     else if ((time > 0.23) && (time <= 0.6)) { // Twist
         geometry_array = calculate_geometry_array(
             Twist,
-            geometry,
             (time - 0.23) / (0.6 - 0.23),
             u_min, u_max, u_count,
             v_min, v_max, v_count,
@@ -334,7 +354,6 @@ export function getGeometry(time=0, radius=5, number_of_segments=32, number_of_r
     else if ((time > 0.6) && (time <= 0.93)) { // Unpush
         geometry_array = calculate_geometry_array(
             Unpush,
-            geometry,
             (time - 0.6) / (0.93 - 0.6),
             u_min, u_max, u_count,
             v_min, v_max, v_count,
@@ -344,7 +363,6 @@ export function getGeometry(time=0, radius=5, number_of_segments=32, number_of_r
     else if ((time > 0.93) && (time <= 1.0)) { // Uncorrugate
         geometry_array = calculate_geometry_array(
             UnCorrugate,
-            geometry,
             (time - 0.93) / (1.0 - 0.93),
             u_min, u_max, u_count,
             v_min, v_max, v_count,
@@ -355,11 +373,10 @@ export function getGeometry(time=0, radius=5, number_of_segments=32, number_of_r
         console.log("Error: time must be between 0 and 1");
         // raise error
         throw "Error: time must be between 0 and 1";
-    }
-
-
-    geometry.setAttribute('position', new THREE.BufferAttribute(geometry_array, 3));
-    return geometry;
+    }    
+    // geometry.setAttribute('position', new THREE.BufferAttribute(geometry_array, 3));
+    return geometry_array;
 
 }
 
+export { getGeometry };
