@@ -374,7 +374,7 @@ function getGeometry(time=0, radius=5, number_of_segments=32, number_of_rings=32
         // raise error
         throw "Error: time must be between 0 and 1";
     }    
-    // geometry.setAttribute('position', new THREE.BufferAttribute(geometry_array, 3));
+
     return geometry_array;
 
 }
