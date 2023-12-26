@@ -232,7 +232,7 @@ function Unpush(u, v, t, num_strips) {
 }
 
 function UnCorrugate(u, v, t, num_strips) {
-    var tmp = TInterp(t);
+    var tmp = TInterp(t* (-1) + 1);
     t = tmp.f;
 
     return AddFigureEight(
