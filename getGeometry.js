@@ -43,7 +43,7 @@ function AddFigureEight(
         v
     ); // TwoJetVec
 
-    return p.operatorPlus(figure_eight).rotate_z(v.operatorMultiplyScalar(1/num_strips));
+    return p.operatorPlus(figure_eight).rotate_z(v.operatorMultiplyScalar(1.0/num_strips));
 }
 
 function Arc(u, v, xsize, ysize, zsize) { // returns ThreeJetVec

@@ -12,9 +12,8 @@ var scene = new THREE.Scene();
 // set up the gui for setting the parameters
 const gui = new GUI();
 var obj = {
-    pauseTime: true,
+    pauseTime: false,
     time: 0,
-    numberofdots: 169, // remove this later
     num_strips: 8,
     u_min: 0,
     u_max: 1,
@@ -22,13 +21,12 @@ var obj = {
     v_min: 0,
     v_max: 1,
     v_count: 12,
-    automaticRotation: true,
-    
+    automaticRotation: false,
+    complete_mirror: true,
 }
 
 gui.add(obj, 'time', 0, 1).listen();
 gui.add(obj, 'pauseTime');
-gui.add(obj, 'numberofdots', 1, 169).step(1);
 gui.add(obj, 'num_strips', 1, 20).step(1);
 gui.add(obj, 'u_min', 0, 1).step(0.01);
 gui.add(obj, 'u_max', 0, 1).step(0.01);
@@ -37,6 +35,7 @@ gui.add(obj, 'v_min', 0, 1).step(0.01);
 gui.add(obj, 'v_max', 0, 1).step(0.01);
 gui.add(obj, 'v_count', 1, 100).step(1);
 gui.add(obj, 'automaticRotation');
+gui.add(obj, 'complete_mirror');
 
 
 
@@ -89,21 +88,20 @@ var back_material = new THREE.MeshStandardMaterial({
 });
 
 var blue_material = new THREE.MeshBasicMaterial({
-    color: 0x0000ff,
+    color: 0xEC449B,
     side: THREE.BackSide,
 });
 
 var red_material = new THREE.MeshBasicMaterial({
-    color: 0xff0000,
+    color: 0x99F443,
     side: THREE.FrontSide,
 });
 
 var wireframe_material = new THREE.MeshBasicMaterial({
-    color: 0x00ff00,
+    color: 0xffffff,
     wireframe: true,
     // opacity: 0.5,
     side: THREE.DoubleSide,
-    // opacity: 0.5,
 });
 
 var inner_sphere = new THREE.Mesh(geometry, blue_material);
@@ -116,15 +114,11 @@ scene.add(outer_sphere);
 scene.add(wireframe);
 
 
-camera.position.z = 5;
+camera.position.z = 3;
+
 
 function get_geometry_from_coordinates(coordinates) {
-    console.log("Coordinates lenght", coordinates.length)
-
-    coordinates = coordinates.slice(0, obj.numberofdots);
     var geometry = new THREE.BufferGeometry();
-
-    // var vertices = new Float32Array(coordinates.map(coord => [coord.x, coord.y, coord.z]).flat());
 
     var indices = [];
     var v_count = obj.v_count;
@@ -133,9 +127,7 @@ function get_geometry_from_coordinates(coordinates) {
         for (var j = 0; j < v_count; j++) {
             var index = i * (v_count +1) + j;
             indices.push(index, index + 1, index + v_count+1);
-            // console.log(index, index + 1, index + v_count+1)
             indices.push(index + v_count+1, index + 1, index + v_count+1 + 1);
-            // console.log(index + v_count+1, index + 1, index + v_count+1 + 1)
         }
     }
     
@@ -172,8 +164,17 @@ function complete_mirror(geometry) {
 function animate() {
     requestAnimationFrame(animate);
 
+    var time;
+    if (obj.pauseTime == false) {
+        time = Math.sin( Date.now() / 1500 ) / 2 + 0.5;
+        obj.time = time;
+    } 
+    else {
+        time = obj.time;
+    }
+
     var coordinates = getGeometry(
-        obj.time,
+        time,
         obj.num_strips,
         obj.u_min,
         obj.u_max,
@@ -183,7 +184,9 @@ function animate() {
         obj.v_count
     );
     var geometry = get_geometry_from_coordinates(coordinates);
-    geometry = complete_mirror(geometry);
+    if (obj.complete_mirror) {
+        geometry = complete_mirror(geometry);
+    }
     
     inner_sphere.geometry = geometry;
     outer_sphere.geometry = geometry;
@@ -197,10 +200,6 @@ function animate() {
         wireframe.rotation.y += 0.01;    
     }
     
-    if (obj.pauseTime == false) {
-        obj.time = (obj.time + 0.005) % 1;
-    }
-
     renderer.render(scene, camera);
 }
 

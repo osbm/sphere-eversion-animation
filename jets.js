@@ -18,14 +18,14 @@ class TwoJet {
       this.fuv = duv;
     }
   
-    derivative(index) {
-      if (index === 0) {
-        return new TwoJet(this.f, 0, this.fv, 0);
-      } else if (index === 1) {
-        return new TwoJet(this.f, this.fu, 0, 0);
-      }
-      return new TwoJet(this.f, this.fu, this.fv, 0);
-    }
+    // derivative(index) {
+    //   if (index === 0) {
+    //     return new TwoJet(this.f, 0, this.fv, 0);
+    //   } else if (index === 1) {
+    //     return new TwoJet(this.f, this.fu, 0, 0);
+    //   }
+    //   return new TwoJet(this.f, this.fu, this.fv, 0);
+    // }
   
     operatorPlus(other) {
       return new TwoJet(
@@ -57,7 +57,12 @@ class TwoJet {
     }
   
     operatorMultiplyScalar(d) {
-      return new TwoJet(d * this.f, d * this.fu, d * this.fv, d * this.fuv);
+      return new TwoJet(
+        d * this.f,
+        d * this.fu,
+        d * this.fv,
+        d * this.fuv
+      );
     }
   
     // operatorMultiplyScalar(d) {
@@ -83,8 +88,8 @@ class TwoJet {
   
     operatorPower(n) {
       const x0 = Math.pow(this.f, n);
-      const x1 = this.f === 0 ? 0 : (n * x0) / this.f;
-      const x2 = this.f === 0 ? 0 : ((n - 1) * x1) / this.f;
+      const x1 = this.f === 0 ? 0 : n * x0 / this.f;
+      const x2 = this.f === 0 ? 0 : (n - 1) * x1 / this.f;
       return new TwoJet(
         x0,
         x1 * this.fu,
@@ -359,13 +364,13 @@ class TwoJetVec {
     );
   }
 
-  derivative_vec(index) {
-    return new TwoJetVec(
-      this.x.derivative(index),
-      this.y.derivative(index),
-      this.z.derivative(index)
-    );
-  }
+  // derivative_vec(index) {
+  //   return new TwoJetVec(
+  //     this.x.derivative(index),
+  //     this.y.derivative(index),
+  //     this.z.derivative(index)
+  //   );
+  // }
   
 
   cross(other) {
