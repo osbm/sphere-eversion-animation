@@ -1,124 +1,201 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'jsm/controls/OrbitControls.js';
 import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm';
+import { BufferGeometryUtils } from 'jsm/utils/BufferGeometryUtils.js';
 
 import { getGeometry } from './getGeometry.js';
-// var result = getGeometry(0.0)
-// console.log(result.length);
-// console.log(result);
+
+// set up the scene
 var scene = new THREE.Scene();
+
+
+// set up the gui for setting the parameters
 const gui = new GUI();
-
-
 var obj = {
     pauseTime: true,
     time: 0,
+    numberofdots: 169, // remove this later
+    num_strips: 8,
+    u_min: 0,
+    u_max: 1,
+    u_count: 12,
+    v_min: 0,
+    v_max: 1,
+    v_count: 12,
+    automaticRotation: true,
+    
 }
 
 gui.add(obj, 'time', 0, 1).listen();
-gui.add(obj, 'pauseTime')
+gui.add(obj, 'pauseTime');
+gui.add(obj, 'numberofdots', 1, 169).step(1);
+gui.add(obj, 'num_strips', 1, 20).step(1);
+gui.add(obj, 'u_min', 0, 1).step(0.01);
+gui.add(obj, 'u_max', 0, 1).step(0.01);
+gui.add(obj, 'u_count', 1, 100).step(1);
+gui.add(obj, 'v_min', 0, 1).step(0.01);
+gui.add(obj, 'v_max', 0, 1).step(0.01);
+gui.add(obj, 'v_count', 1, 100).step(1);
+gui.add(obj, 'automaticRotation');
+
+
+
 
 // set scene background color to rgb(20, 25, 40)
 scene.background = new THREE.Color(0x141928);
 
-
+// set up the light
 const light = new THREE.PointLight(0xffffff, 10)
 light.position.set(10, 10, 10)
 scene.add(light)
-const ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
+const ambientLight = new THREE.AmbientLight( 0xffffff, 0.6 );
 scene.add( ambientLight );
 
 
+// set up the camera
 var camera = new THREE.PerspectiveCamera(
     75, // fov = field of view
     window.innerWidth / window.innerHeight, // aspect ratio
     0.1, // this is the near clipping plane
     1000 // this is the far clipping plane
 );
+
+// set up the renderer
 var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+
+
+// set up the orbit controls
 var orbit_controls = new OrbitControls(camera, renderer.domElement);
 orbit_controls.enablePan = false;
 
 
 // add a plane with color and outline
 var geometry = new THREE.SphereGeometry(1, 32, 32);
-// var front_material = new THREE.MeshStandardMaterial({
-//     color: 0x00ff00,
-//     // wireframe: true,
-//     side: THREE.FrontSide,
-//     opacity: 0.5,
-// });
+var front_material = new THREE.MeshStandardMaterial({
+    color: 0x00ff00,
+    // wireframe: true,
+    side: THREE.FrontSide,
+    opacity: 0.5,
+});
 
-// var back_material = new THREE.MeshStandardMaterial({
-//     color: 0x0000ff,
-//     // wireframe: true,
-//     side: THREE.BackSide,
-//     opacity: 0.5,
-// });
+var back_material = new THREE.MeshStandardMaterial({
+    color: 0x0000ff,
+    // wireframe: true,
+    side: THREE.BackSide,
+    opacity: 0.5,
+});
 
-// var wireframe_material = new THREE.MeshStandardMaterial({
-//     color: 0x000000,
-//     wireframe: true,
-//     opacity: 0.5,
-//     side: THREE.DoubleSide,
-//     // opacity: 0.5,
-// });
+var blue_material = new THREE.MeshBasicMaterial({
+    color: 0x0000ff,
+    side: THREE.BackSide,
+});
 
-// var inner_sphere = new THREE.Mesh(geometry, back_material);
-// var outer_sphere = new THREE.Mesh(geometry, front_material);
-// var wireframe = new THREE.Mesh(geometry, wireframe_material);
+var red_material = new THREE.MeshBasicMaterial({
+    color: 0xff0000,
+    side: THREE.FrontSide,
+});
+
+var wireframe_material = new THREE.MeshBasicMaterial({
+    color: 0x00ff00,
+    wireframe: true,
+    // opacity: 0.5,
+    side: THREE.DoubleSide,
+    // opacity: 0.5,
+});
+
+var inner_sphere = new THREE.Mesh(geometry, blue_material);
+var outer_sphere = new THREE.Mesh(geometry, red_material);
+var wireframe = new THREE.Mesh(geometry, wireframe_material);
 
 
-// scene.add(inner_sphere);
-// scene.add(outer_sphere);
-// scene.add(wireframe);
+scene.add(inner_sphere);
+scene.add(outer_sphere);
+scene.add(wireframe);
 
 
 camera.position.z = 5;
 
-// var sphere_geometry = inner_sphere.geometry.getAttribute('position');
-// console.log(sphere_geometry.array);
+function get_geometry_from_coordinates(coordinates) {
+    console.log("Coordinates lenght", coordinates.length)
+
+    coordinates = coordinates.slice(0, obj.numberofdots);
+    var geometry = new THREE.BufferGeometry();
+
+    // var vertices = new Float32Array(coordinates.map(coord => [coord.x, coord.y, coord.z]).flat());
+
+    var indices = [];
+    var v_count = obj.v_count;
+    var u_count = obj.u_count;
+    for (var i = 0; i < u_count; i++) {
+        for (var j = 0; j < v_count; j++) {
+            var index = i * (v_count +1) + j;
+            indices.push(index, index + 1, index + v_count+1);
+            // console.log(index, index + 1, index + v_count+1)
+            indices.push(index + v_count+1, index + 1, index + v_count+1 + 1);
+            // console.log(index + v_count+1, index + 1, index + v_count+1 + 1)
+        }
+    }
+    
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(coordinates.map(coord => [coord.x, coord.y, coord.z]).flat(), 3))
+    geometry.setIndex(indices);
+    return geometry;
+}
+
+
+function complete_mirror(geometry) {
+    // first mirror the geometry 
+    var geometry_clone = geometry.clone();
+    // geometry_clone.applyMatrix4(new THREE.Matrix4().makeScale(1, 1, -1));
+    // instead of mirroring, jusr rotate the geometry by 180 degrees
+    geometry_clone.applyMatrix4(new THREE.Matrix4().makeRotationY(Math.PI));
+
+    // merge the two geometries
+    var merged = BufferGeometryUtils.mergeBufferGeometries([geometry, geometry_clone]);
+    
+    // now i have apple slice of the sphere. I just need to copy rotate it by some angle and merge it with the original geometry
+    var angle = 2 * Math.PI / obj.num_strips;
+
+    var num_rotataions = obj.num_strips - 1;
+    var rotated_geometry = merged.clone();
+    for (var i = 0; i < num_rotataions; i++) {
+        rotated_geometry.applyMatrix4(new THREE.Matrix4().makeRotationZ(angle));
+        merged = BufferGeometryUtils.mergeBufferGeometries([merged, rotated_geometry]);
+    }
+
+    return merged;
+}
 
 // Create a simple animation loop
 function animate() {
     requestAnimationFrame(animate);
 
-    var coordinates = getGeometry(obj.time);
+    var coordinates = getGeometry(
+        obj.time,
+        obj.num_strips,
+        obj.u_min,
+        obj.u_max,
+        obj.u_count,
+        obj.v_min,
+        obj.v_max,
+        obj.v_count
+    );
+    var geometry = get_geometry_from_coordinates(coordinates);
+    geometry = complete_mirror(geometry);
+    
+    inner_sphere.geometry = geometry;
+    outer_sphere.geometry = geometry;
+    wireframe.geometry = geometry;
 
-    var polyshape = new THREE.Shape(coordinates.map((coord) => {
-        return new THREE.Vector2(coord.x, coord.y);
-    }));
 
-    var geometry = new THREE.ShapeGeometry(polyshape);
-
-    geometry.setAttribute("position", new THREE.Float32BufferAttribute(coordinates.map(coord => [coord.x, coord.y, coord.z]).flat(), 3))
-
-    // i want to see dots appear in the order that they are in the coordinates array 
-    for (var i = 0; i < coordinates.length; i++) {
-        var dot = new THREE.Mesh(
-            new THREE.SphereGeometry(0.01, 3, 3),
-            new THREE.MeshBasicMaterial({color: 0xffffff})
-        );
-
-        dot.position.set(coordinates[i].x, coordinates[i].y, coordinates[i].z);
-        scene.add(dot);
-
-        // wait for 1 second
-        
+    if (obj.automaticRotation) {
+        // // Rotate the cube
+        inner_sphere.rotation.y += 0.01;
+        outer_sphere.rotation.y += 0.01;
+        wireframe.rotation.y += 0.01;    
     }
-
-    // inner_sphere.geometry = geometry;
-    // outer_sphere.geometry = geometry;
-    // wireframe.geometry = geometry;
-
-
-    // // Rotate the cube
-    // inner_sphere.rotation.y += 0.01;
-    // outer_sphere.rotation.y += 0.01;
-    // wireframe.rotation.y += 0.01;
     
     if (obj.pauseTime == false) {
         obj.time = (obj.time + 0.005) % 1;

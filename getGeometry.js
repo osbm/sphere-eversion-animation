@@ -313,7 +313,7 @@ function calculate_geometry_array(func, time, u_min, u_max, u_count, v_min, v_ma
 }
 
 
-function getGeometry(time=0, radius=5, number_of_segments=32, number_of_rings=32, num_strips=8, u_min=0, u_max=1, u_count=12, v_min=0, v_max=1, v_count=12) {
+function getGeometry(time=0, num_strips=8, u_min=0, u_max=1, u_count=12, v_min=0, v_max=1, v_count=12) {
     if ((0.0 > time) && (time > 1.0)) {
         console.log("Error: time must be between 0 and 1");
         // raise error
