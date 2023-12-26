@@ -45,36 +45,36 @@ orbit_controls.enablePan = false;
 
 // add a plane with color and outline
 var geometry = new THREE.SphereGeometry(1, 32, 32);
-var front_material = new THREE.MeshStandardMaterial({
-    color: 0x00ff00,
-    // wireframe: true,
-    side: THREE.FrontSide,
-    opacity: 0.5,
-});
+// var front_material = new THREE.MeshStandardMaterial({
+//     color: 0x00ff00,
+//     // wireframe: true,
+//     side: THREE.FrontSide,
+//     opacity: 0.5,
+// });
 
-var back_material = new THREE.MeshStandardMaterial({
-    color: 0x0000ff,
-    // wireframe: true,
-    side: THREE.BackSide,
-    opacity: 0.5,
-});
+// var back_material = new THREE.MeshStandardMaterial({
+//     color: 0x0000ff,
+//     // wireframe: true,
+//     side: THREE.BackSide,
+//     opacity: 0.5,
+// });
 
-var wireframe_material = new THREE.MeshStandardMaterial({
-    color: 0x000000,
-    wireframe: true,
-    opacity: 0.5,
-    side: THREE.DoubleSide,
-    // opacity: 0.5,
-});
+// var wireframe_material = new THREE.MeshStandardMaterial({
+//     color: 0x000000,
+//     wireframe: true,
+//     opacity: 0.5,
+//     side: THREE.DoubleSide,
+//     // opacity: 0.5,
+// });
 
-var inner_sphere = new THREE.Mesh(geometry, back_material);
-var outer_sphere = new THREE.Mesh(geometry, front_material);
-var wireframe = new THREE.Mesh(geometry, wireframe_material);
+// var inner_sphere = new THREE.Mesh(geometry, back_material);
+// var outer_sphere = new THREE.Mesh(geometry, front_material);
+// var wireframe = new THREE.Mesh(geometry, wireframe_material);
 
 
-scene.add(inner_sphere);
-scene.add(outer_sphere);
-scene.add(wireframe);
+// scene.add(inner_sphere);
+// scene.add(outer_sphere);
+// scene.add(wireframe);
 
 
 camera.position.z = 5;
@@ -96,17 +96,29 @@ function animate() {
 
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(coordinates.map(coord => [coord.x, coord.y, coord.z]).flat(), 3))
 
+    // i want to see dots appear in the order that they are in the coordinates array 
+    for (var i = 0; i < coordinates.length; i++) {
+        var dot = new THREE.Mesh(
+            new THREE.SphereGeometry(0.01, 3, 3),
+            new THREE.MeshBasicMaterial({color: 0xffffff})
+        );
+
+        dot.position.set(coordinates[i].x, coordinates[i].y, coordinates[i].z);
+        scene.add(dot);
+
+        // wait for 1 second
+        
+    }
+
+    // inner_sphere.geometry = geometry;
+    // outer_sphere.geometry = geometry;
+    // wireframe.geometry = geometry;
 
 
-    inner_sphere.geometry = geometry;
-    outer_sphere.geometry = geometry;
-    wireframe.geometry = geometry;
-
-
-    // Rotate the cube
-    inner_sphere.rotation.y += 0.01;
-    outer_sphere.rotation.y += 0.01;
-    wireframe.rotation.y += 0.01;
+    // // Rotate the cube
+    // inner_sphere.rotation.y += 0.01;
+    // outer_sphere.rotation.y += 0.01;
+    // wireframe.rotation.y += 0.01;
     
     if (obj.pauseTime == false) {
         obj.time = (obj.time + 0.005) % 1;
