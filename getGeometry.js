@@ -43,6 +43,7 @@ function AddFigureEight(
         v
     ); // TwoJetVec
 
+    // p = p.get_two_jet_vec(); // i dont know why this doesnt work
     return p.operatorPlus(figure_eight).rotate_z(v.operatorMultiplyScalar(1.0/num_strips));
 }
 
@@ -113,11 +114,18 @@ function UInterp(x) {
 
 function FFInterp(x) {
     var FFPOW = 3;
+    // console.log(x.f);
     x = x.operatorModulo(2);
+    // console.log(x.f);
     if (x.f > 2) {
         x = x.operatorMultiplyScalar(-1).operatorPlusScalar(2);
     }
-    x = x.operatorMultiplyScalar(1.06).operatorPlusScalar(-0.03);
+    // console.log(x.f);
+
+    x = x.operatorMultiplyScalar(1.06).operatorPlusScalar(-0.05);
+
+    // console.log(x.f);
+
     if (x.f < 0) {
         return new ThreeJet(0, 0, 0);
     } else if (x.f > 1) {
