@@ -571,6 +571,10 @@ class ThreeJetVec {
     const sum = x_squared.operatorPlus(y_squared);
     return sum.operatorPower(0.5);
   }
+
+  get_two_jet_vec() { // returns TwoJetVec
+    return new TwoJetVec(this.x.get_two_jet(), this.y.get_two_jet(), this.z.get_two_jet());
+  }
 }
 
 
