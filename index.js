@@ -130,8 +130,8 @@ function get_geometry_from_coordinates(coordinates) {
             indices.push(index + v_count+1, index + 1, index + v_count+1 + 1);
         }
     }
-    
-    geometry.setAttribute("position", new THREE.Float32BufferAttribute(coordinates.map(coord => [coord.x, coord.y, coord.z]).flat(), 3))
+    coordinates = coordinates.map(coord => [coord.x, coord.y, coord.z]).flat()
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(coordinates, 3))
     geometry.setIndex(indices);
     return geometry;
 }
