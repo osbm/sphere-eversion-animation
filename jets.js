@@ -375,9 +375,9 @@ class TwoJetVec {
 
   cross(other) {
     return new TwoJetVec(
-      this.y.operatorMultiply(other.z).operatorPlus(this.z.operatorMultiply(other.y)),
-      this.z.operatorMultiply(other.x).operatorPlus(this.x.operatorMultiply(other.z)),
-      this.x.operatorMultiply(other.y).operatorPlus(this.y.operatorMultiply(other.x))
+      this.y.operatorMultiply(other.z).operatorPlus(this.z.operatorMultiply(other.y).operatorMultiplyScalar(-1)),
+      this.z.operatorMultiply(other.x).operatorPlus(this.x.operatorMultiply(other.z).operatorMultiplyScalar(-1)),
+      this.x.operatorMultiply(other.y).operatorPlus(this.y.operatorMultiply(other.x).operatorMultiplyScalar(-1))
     );
   }
 
