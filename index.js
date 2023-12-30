@@ -22,7 +22,11 @@ var obj = {
     v_max: 1,
     v_count: 12,
     automaticRotation: false,
+    material_opacity: 0.7,
+    flatShading: false,
+    show_wireframe: true,
     complete_mirror: true,
+
 }
 
 gui.add(obj, 'time', 0, 1).listen();
@@ -34,6 +38,9 @@ gui.add(obj, 'u_count', 1, 100).step(1);
 gui.add(obj, 'v_min', 0, 1).step(0.01);
 gui.add(obj, 'v_max', 0, 1).step(0.01);
 gui.add(obj, 'v_count', 1, 100).step(1);
+gui.add(obj, 'material_opacity', 0, 1);
+gui.add(obj, 'flatShading');
+gui.add(obj, 'show_wireframe');
 gui.add(obj, 'automaticRotation');
 gui.add(obj, 'complete_mirror');
 
@@ -43,7 +50,7 @@ gui.add(obj, 'complete_mirror');
 // set scene background color to rgb(20, 25, 40)
 scene.background = new THREE.Color(0x141928);
 
-// set up the light
+// // set up the light
 const light = new THREE.PointLight(0xffffff, 10)
 light.position.set(10, 10, 10)
 scene.add(light)
@@ -77,35 +84,30 @@ var front_material = new THREE.MeshStandardMaterial({
     color: 0x00ff00,
     // wireframe: true,
     side: THREE.FrontSide,
-    opacity: 0.5,
+    transparent: true,
+    opacity: obj.material_opacity,
+    // flatShading: false,
 });
 
 var back_material = new THREE.MeshStandardMaterial({
     color: 0x0000ff,
     // wireframe: true,
     side: THREE.BackSide,
-    opacity: 0.5,
-});
-
-var blue_material = new THREE.MeshBasicMaterial({
-    color: 0xEC449B,
-    side: THREE.BackSide,
-});
-
-var red_material = new THREE.MeshBasicMaterial({
-    color: 0x99F443,
-    side: THREE.FrontSide,
+    transparent: true,
+    opacity: obj.material_opacity,
+    // flatShading: false,
 });
 
 var wireframe_material = new THREE.MeshBasicMaterial({
     color: 0xffffff,
     wireframe: true,
-    // opacity: 0.5,
+    opacity: 0.1,
+    transparent: true,
     side: THREE.DoubleSide,
 });
 
-var inner_sphere = new THREE.Mesh(geometry, blue_material);
-var outer_sphere = new THREE.Mesh(geometry, red_material);
+var inner_sphere = new THREE.Mesh(geometry, back_material);
+var outer_sphere = new THREE.Mesh(geometry, front_material);
 var wireframe = new THREE.Mesh(geometry, wireframe_material);
 
 
@@ -187,7 +189,41 @@ function animate() {
     if (obj.complete_mirror) {
         geometry = complete_mirror(geometry);
     }
+    geometry.computeVertexNormals();
+
+
+    var front_material = new THREE.MeshStandardMaterial({
+        color: 0x00ff00,
+        // wireframe: true,
+        side: THREE.FrontSide,
+        transparent: true,
+        opacity: obj.material_opacity,
+        flatShading: obj.flatShading,
+    });
     
+    var back_material = new THREE.MeshStandardMaterial({
+        color: 0x0000ff,
+        // wireframe: true,
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: obj.material_opacity,
+        flatShading: obj.flatShading,
+    });
+
+    var wireframe_material = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        wireframe: true,
+        opacity: obj.show_wireframe ? 1 : 0,
+        transparent: true,
+        side: THREE.DoubleSide,
+    });
+
+    inner_sphere.material = back_material;
+    outer_sphere.material = front_material;
+    wireframe.material = wireframe_material;
+
+
+
     inner_sphere.geometry = geometry;
     outer_sphere.geometry = geometry;
     wireframe.geometry = geometry;
