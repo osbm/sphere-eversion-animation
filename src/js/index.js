@@ -3,7 +3,7 @@ import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GUI } from 'dat.gui';
 
-import { getGeometry } from './getGeometry.js';
+import { getGeometry } from "./ThurstonsSphere/getGeometry.js";
 
 // set up the scene
 var scene = new THREE.Scene();
@@ -12,8 +12,8 @@ var scene = new THREE.Scene();
 // set up the gui for setting the parameters
 const gui = new GUI();
 var obj = {
-    pauseTime: false,
-    time: 0,
+    pauseTime: true,
+    time: 0.5,
     num_strips: 8,
     u_min: 0,
     u_max: 1,
