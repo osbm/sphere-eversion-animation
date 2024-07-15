@@ -111,7 +111,7 @@ class TwoJet {
     // }
 
     operatorModulo(d) {
-      const modulo_f = this.f % d;
+      let modulo_f = this.f % d;
       if (modulo_f < 0) {
         modulo_f += d;
       }
@@ -248,7 +248,7 @@ class ThreeJet {
     }
 
     operatorModulo (d) { // returns ThreeJet
-      const modulo_f = this.f % d;
+      let modulo_f = this.f % d;
       if (modulo_f < 0) {
         modulo_f += d;
       }

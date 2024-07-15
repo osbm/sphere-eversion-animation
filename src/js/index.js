@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'jsm/controls/OrbitControls.js';
-import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm';
-import { BufferGeometryUtils } from 'jsm/utils/BufferGeometryUtils.js';
+import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GUI } from 'dat.gui';
 
 import { getGeometry } from './getGeometry.js';
 
@@ -147,7 +147,7 @@ function complete_mirror(geometry) {
     geometry_clone.applyMatrix4(new THREE.Matrix4().makeRotationY(Math.PI));
 
     // merge the two geometries
-    var merged = BufferGeometryUtils.mergeBufferGeometries([geometry, geometry_clone]);
+    var merged = BufferGeometryUtils.mergeGeometries([geometry, geometry_clone]);
     
     // now i have apple slice of the sphere. I just need to copy rotate it by some angle and merge it with the original geometry
     var angle = 2 * Math.PI / obj.num_strips;
@@ -156,7 +156,7 @@ function complete_mirror(geometry) {
     var rotated_geometry = merged.clone();
     for (var i = 0; i < num_rotataions; i++) {
         rotated_geometry.applyMatrix4(new THREE.Matrix4().makeRotationZ(angle));
-        merged = BufferGeometryUtils.mergeBufferGeometries([merged, rotated_geometry]);
+        merged = BufferGeometryUtils.mergeGeometries([merged, rotated_geometry]);
     }
 
     return merged;
