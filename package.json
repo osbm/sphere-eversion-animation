@@ -4,7 +4,8 @@
   "description": "Thurston's sphere eversion algorithm is ported to javascript and visualized using [three.js](https://threejs.org/).",
   "main": "index.js",
   "scripts": {
-    "start": "vite"
+    "start": "vite",
+    "build": "vite build"
   },
   "author": "",
   "license": "ISC",
