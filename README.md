@@ -8,6 +8,10 @@ Here is the famous explainer video [Outside In](https://www.youtube.com/watch?v=
 From what i can tell this algorithm almost forgotten on the internet. Almost 3/4 of the links i find are dead. I hope this project can help keep it alive.
 
 
+## Try it Yourself
+
+If you want to play with this app without downloading the source code, here's a demo link:  [Sphere Eversion Demo](https://josephmfaulkner.github.io/sphere-eversion-animation/)
+
 ## Up and running
 
 ### Requirements
