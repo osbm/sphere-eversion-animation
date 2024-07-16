@@ -13,7 +13,7 @@ From what i can tell this algorithm almost forgotten on the internet. Almost 3/4
 
 ## Try it Yourself
 
-If you want to play with this app without downloading the source code, here's a demo link:  [Sphere Eversion Demo](https://josephmfaulkner.github.io/sphere-eversion-animation/)
+If you want to play with this app without downloading the source code, here's a demo link:  [Sphere Eversion Demo](https://osmanbayram.com/sphere-eversion-animation/)
 
 ## Up and running
 
@@ -28,7 +28,7 @@ You don't necessarily need these same versions, but I'm listing the ones I used)
 ### Commands
 
 ```
-git clone https://github.com/josephmfaulkner/sphere-eversion-animation.git
+git clone https://github.com/osbm/sphere-eversion-animation.git
 cd sphere-eversion-animation
 npm install
 npm start
