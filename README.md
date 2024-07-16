@@ -1,6 +1,9 @@
 
 # Thurston's sphere eversion algorithm
 
+![Animation of Thurston's sphere eversion](thurstons-sphere-eversion.gif)
+
+
 Ported to javascript and visualized using [three.js](https://threejs.org/).
 
 Here is the famous explainer video [Outside In](https://www.youtube.com/watch?v=wO61D9x6lNY). And more info about the source C++ program [here](https://profs.etsmtl.ca/mmcguffin/eversion/)
