@@ -3,8 +3,11 @@ import { getGeometry } from "./getGeometry.js";
 import { get_geometry_from_coordinates, complete_mirror } from "./geometryHelpers.js";
 
 const defaultParameters = {
+    
     pauseTime: false,
-    time: 0.5,
+    time: 0.0,
+    timeForward: true,
+    speed: 15.0, 
     num_strips: 8,
     u_min: 0,
     u_max: 1,
@@ -91,13 +94,26 @@ export default class ThurstonsSphere {
     }
 
     animationTick(){
-        let time;
-        if (this.parameters.pauseTime == false) {
-            time = Math.sin( Date.now() / 1500 ) / 2 + 0.5;
-            this.parameters.time = time;
-        } 
-        else {
-            time = this.parameters.time;
+
+        const { pauseTime, time, speed} = this.parameters;
+        if(!pauseTime)
+        {
+            let { timeForward } = this.parameters;
+
+            const timeDelta = (timeForward ? speed : -(speed)) * 0.0001;
+            
+            let newTime = time + timeDelta;
+    
+            if(newTime > 1.0){
+                timeForward = false;
+                newTime = 1.0;
+            }
+            if(newTime < 0.0){
+                timeForward = true;
+                newTime = 0.0; 
+            }
+            this.parameters.time = newTime; 
+            this.parameters.timeForward = timeForward;
         }
 
         this.updateSphereMaterial();
@@ -105,7 +121,6 @@ export default class ThurstonsSphere {
 
 
         if (this.parameters.automaticRotation) {
-            // // Rotate the cube
             this.inner_sphere.rotation.y += 0.01;
             this.outer_sphere.rotation.y += 0.01;
             this.wireframe.rotation.y += 0.01;    

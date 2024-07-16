@@ -39,7 +39,8 @@ orbit_controls.enablePan = false;
 
 // set up the gui for setting the parameters
 const gui = new GUI();
-gui.add(thurstonsSphere.parameters, 'time', 0, 1).listen();
+gui.add(thurstonsSphere.parameters, 'speed', 1, 150).step(1);
+gui.add(thurstonsSphere.parameters, 'time', 0.0, 1.0).listen();
 gui.add(thurstonsSphere.parameters, 'num_strips', 1, 20).step(1);
 gui.add(thurstonsSphere.parameters, 'u_min', 0, 1).step(0.01);
 gui.add(thurstonsSphere.parameters, 'u_max', 0, 1).step(0.01);
@@ -48,6 +49,7 @@ gui.add(thurstonsSphere.parameters, 'v_min', 0, 1).step(0.01);
 gui.add(thurstonsSphere.parameters, 'v_max', 0, 1).step(0.01);
 gui.add(thurstonsSphere.parameters, 'v_count', 1, 100).step(1);
 gui.add(thurstonsSphere.parameters, 'material_opacity', 0, 1);
+
 gui.add(thurstonsSphere.parameters, 'flatShading');
 gui.add(thurstonsSphere.parameters, 'show_wireframe');
 gui.add(thurstonsSphere.parameters, 'automaticRotation');
