@@ -1,0 +1,20 @@
+{
+  "name": "sphere-eversion-animation",
+  "version": "1.0.0",
+  "description": "Thurston's sphere eversion algorithm is ported to javascript and visualized using [three.js](https://threejs.org/).",
+  "main": "index.js",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dat.gui": "^0.7.9",
+    "lil-gui": "^0.19.2",
+    "three": "^0.166.1"
+  },
+  "devDependencies": {
+    "vite": "^5.3.3"
+  }
+}
