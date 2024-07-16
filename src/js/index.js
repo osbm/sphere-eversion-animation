@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GUI } from 'dat.gui';
+import { GUI } from 'lil-gui';
 import ThurstonsSphere from './ThurstonsSphere';
 
 // set up the scene
@@ -39,22 +39,39 @@ orbit_controls.enablePan = false;
 
 // set up the gui for setting the parameters
 const gui = new GUI();
-gui.add(thurstonsSphere.parameters, 'speed', 1, 150).step(1);
-gui.add(thurstonsSphere.parameters, 'time', 0.0, 1.0).listen();
-gui.add(thurstonsSphere.parameters, 'num_strips', 1, 20).step(1);
-gui.add(thurstonsSphere.parameters, 'u_min', 0, 1).step(0.01);
-gui.add(thurstonsSphere.parameters, 'u_max', 0, 1).step(0.01);
-gui.add(thurstonsSphere.parameters, 'u_count', 1, 100).step(1);
-gui.add(thurstonsSphere.parameters, 'v_min', 0, 1).step(0.01);
-gui.add(thurstonsSphere.parameters, 'v_max', 0, 1).step(0.01);
-gui.add(thurstonsSphere.parameters, 'v_count', 1, 100).step(1);
-gui.add(thurstonsSphere.parameters, 'material_opacity', 0, 1);
+//const dummy = { dummyProp : 0};
 
-gui.add(thurstonsSphere.parameters, 'flatShading');
-gui.add(thurstonsSphere.parameters, 'show_wireframe');
-gui.add(thurstonsSphere.parameters, 'automaticRotation');
-gui.add(thurstonsSphere.parameters, 'complete_mirror');
-gui.add(thurstonsSphere.parameters, 'pauseTime');
+//const dummyController = gui.add(dummy, 'dummyProp', 0.0, 1);
+
+const guiTimeFolder = gui.addFolder('Time')
+guiTimeFolder.add(thurstonsSphere.parameters, 'time', 0.0, 1.0).listen();
+guiTimeFolder.add(thurstonsSphere.parameters, 'speed', 1, 150).step(1);
+guiTimeFolder.add(thurstonsSphere.parameters, 'pauseTime');
+guiTimeFolder.add(thurstonsSphere.parameters, 'automaticRotation');
+guiTimeFolder.open();
+
+const guiAlgorithm = gui.addFolder('Algorithm')
+guiAlgorithm.add(thurstonsSphere.parameters, 'num_strips', 1, 20).step(1);
+guiAlgorithm.open();
+
+const guiDetail = gui.addFolder('Detail');
+guiDetail.add(thurstonsSphere.parameters, 'u_count', 1, 100).step(1);
+guiDetail.add(thurstonsSphere.parameters, 'v_count', 1, 100).step(1);
+guiDetail.open();
+
+const guiRender = gui.addFolder('Render');
+guiRender.add(thurstonsSphere.parameters, 'u_min', 0, 1).step(0.01);
+guiRender.add(thurstonsSphere.parameters, 'u_max', 0, 1).step(0.01);
+guiRender.add(thurstonsSphere.parameters, 'v_min', 0, 1).step(0.01);
+guiRender.add(thurstonsSphere.parameters, 'v_max', 0, 1).step(0.01);
+guiRender.add(thurstonsSphere.parameters, 'complete_mirror');
+guiRender.open();
+
+const guiMaterialFolder = gui.addFolder('Material');
+guiMaterialFolder.add(thurstonsSphere.parameters, 'material_opacity', 0, 1);
+guiMaterialFolder.add(thurstonsSphere.parameters, 'flatShading');
+guiMaterialFolder.add(thurstonsSphere.parameters, 'show_wireframe');
+guiMaterialFolder.open();
 
 
 // Create a simple animation loop
