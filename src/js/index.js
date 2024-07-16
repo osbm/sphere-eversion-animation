@@ -3,11 +3,21 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GUI } from 'lil-gui';
 import ThurstonsSphere from './ThurstonsSphere';
 
+import Ground from './scene/objects/Ground';
+import Lights from './scene/objects/Lights';
+
 // set up the scene
 var scene = new THREE.Scene();
 
+
+
 // set scene background color to rgb(20, 25, 40)
-scene.background = new THREE.Color(0x141928);
+scene.background = new THREE.Color(0x34254d);
+
+scene.background = new THREE.Color( 0x34254d );
+scene.fog = new THREE.FogExp2( 0x34254d, 0.55 );
+
+
 
 // // set up the light
 const light = new THREE.PointLight(0xffffff, 10)
@@ -16,20 +26,26 @@ scene.add(light)
 const ambientLight = new THREE.AmbientLight( 0xffffff, 0.6 );
 scene.add( ambientLight );
 
-const thurstonsSphere = new ThurstonsSphere();
+const thurstonsSphere = new ThurstonsSphere({u_count: 20, v_count: 20});
 thurstonsSphere.addToScene(scene);
+
+const ground = new Ground(scene);
+const lights = new Lights(scene);
 
 // set up the camera
 var camera = new THREE.PerspectiveCamera(
     75, // fov = field of view
     window.innerWidth / window.innerHeight, // aspect ratio
-    0.1, // this is the near clipping plane
+    0.001, // this is the near clipping plane
     1000 // this is the far clipping plane
 );
-camera.position.z = 3;
+camera.position.z = 0.25;
+camera.position.x = 0.25;
+camera.position.y = 0.10;
 
 // set up the renderer
 var renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
@@ -39,9 +55,6 @@ orbit_controls.enablePan = false;
 
 // set up the gui for setting the parameters
 const gui = new GUI();
-//const dummy = { dummyProp : 0};
-
-//const dummyController = gui.add(dummy, 'dummyProp', 0.0, 1);
 
 const guiTimeFolder = gui.addFolder('Time')
 guiTimeFolder.add(thurstonsSphere.parameters, 'time', 0.0, 1.0).listen();
@@ -72,6 +85,8 @@ guiMaterialFolder.add(thurstonsSphere.parameters, 'material_opacity', 0, 1);
 guiMaterialFolder.add(thurstonsSphere.parameters, 'flatShading');
 guiMaterialFolder.add(thurstonsSphere.parameters, 'show_wireframe');
 guiMaterialFolder.open();
+
+gui.close();
 
 
 // Create a simple animation loop

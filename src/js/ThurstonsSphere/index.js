@@ -8,7 +8,7 @@ const defaultParameters = {
     time: 0.0,
     timeForward: true,
     speed: 15.0, 
-    num_strips: 8,
+    num_strips: 6,
     u_min: 0,
     u_max: 1,
     u_count: 12,
@@ -18,9 +18,11 @@ const defaultParameters = {
     automaticRotation: false,
     material_opacity: 0.7,
     flatShading: false,
-    show_wireframe: true,
+    show_wireframe: false,
     complete_mirror: true,
 }
+
+const SCALE = 0.1;
 
 export default class ThurstonsSphere {
 
@@ -35,6 +37,27 @@ export default class ThurstonsSphere {
 
         this.updateSphereMaterial();
         this.updateSphereGeometry();
+
+        this.inner_sphere.scale.setX(SCALE);
+        this.inner_sphere.scale.setY(SCALE);
+        this.inner_sphere.scale.setZ(SCALE);
+
+        this.outer_sphere.scale.setX(SCALE);
+        this.outer_sphere.scale.setY(SCALE);
+        this.outer_sphere.scale.setZ(SCALE);
+
+        this.wireframe.scale.setX(SCALE);
+        this.wireframe.scale.setY(SCALE);
+        this.wireframe.scale.setZ(SCALE);
+
+        this.inner_sphere.rotation.x -= Math.PI / 4;
+        this.outer_sphere.rotation.x -= Math.PI / 4;
+        this.wireframe.rotation.x -= Math.PI / 4;    
+
+        this.outer_sphere.castShadow = true;
+        this.inner_sphere.castShadow = true;
+
+
     }
 
     addToScene(scene) {
@@ -45,16 +68,17 @@ export default class ThurstonsSphere {
 
     updateSphereMaterial(){
 
-        this.inner_sphere.material = new THREE.MeshStandardMaterial({
-            color: 0x00ff00,
+        this.inner_sphere.material = new THREE.MeshPhongMaterial({
+            color: 0xffd44e,
             side: THREE.FrontSide,
             transparent: true,
             opacity: this.parameters.material_opacity,
             flatShading: this.parameters.flatShading,
         });
+
         
-        this.outer_sphere.material  = new THREE.MeshStandardMaterial({
-            color: 0x0000ff,
+        this.outer_sphere.material  = new THREE.MeshPhongMaterial({
+            color: 0x931450,
             side: THREE.BackSide,
             transparent: true,
             opacity: this.parameters.material_opacity,
