@@ -57,7 +57,7 @@ orbit_controls.enablePan = false;
 const gui = new GUI();
 
 const guiTimeFolder = gui.addFolder('Time')
-guiTimeFolder.add(thurstonsSphere.parameters, 'time', 0.0, 1.0).listen();
+guiTimeFolder.add(thurstonsSphere.parameters, 'time', 0.0, 1.0).step(0.001).listen();
 guiTimeFolder.add(thurstonsSphere.parameters, 'speed', 1, 150).step(1);
 guiTimeFolder.add(thurstonsSphere.parameters, 'pauseTime');
 guiTimeFolder.add(thurstonsSphere.parameters, 'automaticRotation');
@@ -85,6 +85,14 @@ guiMaterialFolder.add(thurstonsSphere.parameters, 'material_opacity', 0, 1);
 guiMaterialFolder.add(thurstonsSphere.parameters, 'flatShading');
 guiMaterialFolder.add(thurstonsSphere.parameters, 'show_wireframe');
 guiMaterialFolder.open();
+
+const guiSphereColors = guiMaterialFolder.addFolder('Colors'); 
+
+guiSphereColors.addColor(thurstonsSphere.parameters, 'inner_sphere_color');
+guiSphereColors.addColor(thurstonsSphere.parameters, 'outer_sphere_color');
+guiSphereColors.addColor(thurstonsSphere.parameters, 'wireframe_color');
+
+guiSphereColors.open();
 
 gui.close();
 

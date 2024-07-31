@@ -7,7 +7,7 @@ const defaultParameters = {
     pauseTime: false,
     time: 0.0,
     timeForward: true,
-    speed: 15.0, 
+    speed: 5.0, 
     num_strips: 6,
     u_min: 0,
     u_max: 1,
@@ -20,6 +20,9 @@ const defaultParameters = {
     flatShading: false,
     show_wireframe: false,
     complete_mirror: true,
+    inner_sphere_color: 0xffd44e,
+    outer_sphere_color: 0x931450,
+    wireframe_color: 0x000000
 }
 
 const SCALE = 0.1;
@@ -69,16 +72,15 @@ export default class ThurstonsSphere {
     updateSphereMaterial(){
 
         this.inner_sphere.material = new THREE.MeshPhongMaterial({
-            color: 0xffd44e,
+            color: this.parameters.inner_sphere_color,
             side: THREE.FrontSide,
             transparent: true,
             opacity: this.parameters.material_opacity,
             flatShading: this.parameters.flatShading,
         });
 
-        
         this.outer_sphere.material  = new THREE.MeshPhongMaterial({
-            color: 0x931450,
+            color: this.parameters.outer_sphere_color,
             side: THREE.BackSide,
             transparent: true,
             opacity: this.parameters.material_opacity,
@@ -86,7 +88,7 @@ export default class ThurstonsSphere {
         });
     
         this.wireframe.material = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
+            color: this.parameters.wireframe_color,
             wireframe: true,
             opacity: this.parameters.show_wireframe ? 1 : 0,
             transparent: true,
