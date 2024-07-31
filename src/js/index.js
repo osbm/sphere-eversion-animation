@@ -78,16 +78,16 @@ guiRender.add(thurstonsSphere.parameters, 'complete_mirror');
 guiRender.open();
 
 const guiMaterialFolder = gui.addFolder('Sphere Material');
-guiMaterialFolder.add(thurstonsSphere.parameters, 'material_opacity', 0, 1);
-guiMaterialFolder.add(thurstonsSphere.parameters, 'flatShading');
-guiMaterialFolder.add(thurstonsSphere.parameters, 'show_wireframe');
+guiMaterialFolder.add(thurstonsSphere.parameters, 'material_opacity', 0, 1).onChange(() => thurstonsSphere.updateSphereMaterial());
+guiMaterialFolder.add(thurstonsSphere.parameters, 'flatShading').onChange(() => thurstonsSphere.updateSphereMaterial());
+guiMaterialFolder.add(thurstonsSphere.parameters, 'show_wireframe').onChange(() => thurstonsSphere.updateSphereMaterial());
 guiMaterialFolder.open();
 
 const guiSphereColors = guiMaterialFolder.addFolder('Colors'); 
 
-guiSphereColors.addColor(thurstonsSphere.parameters, 'inner_sphere_color');
-guiSphereColors.addColor(thurstonsSphere.parameters, 'outer_sphere_color');
-guiSphereColors.addColor(thurstonsSphere.parameters, 'wireframe_color');
+guiSphereColors.addColor(thurstonsSphere.parameters, 'inner_sphere_color').onChange(() => thurstonsSphere.updateSphereMaterial());
+guiSphereColors.addColor(thurstonsSphere.parameters, 'outer_sphere_color').onChange(() => thurstonsSphere.updateSphereMaterial());
+guiSphereColors.addColor(thurstonsSphere.parameters, 'wireframe_color').onChange(() => thurstonsSphere.updateSphereMaterial());
 
 guiSphereColors.open();
 

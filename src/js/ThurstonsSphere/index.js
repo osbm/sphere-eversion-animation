@@ -142,7 +142,6 @@ export default class ThurstonsSphere {
             this.parameters.timeForward = timeForward;
         }
 
-        this.updateSphereMaterial();
         this.updateSphereGeometry();
 
 
