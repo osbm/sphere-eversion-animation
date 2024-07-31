@@ -22,12 +22,13 @@ export default class {
         this.largePlane.receiveShadow = false;
         scene.add( this.largePlane );
 
-
-
     }
 
     changeColor(newColor){
+        this.plane.material.dispose();
         this.plane.material  = new THREE.MeshPhongMaterial({ color: newColor, specular: 0x101010 });
+
+        this.largePlane.material.dispose();
         this.largePlane.material  = new THREE.MeshPhongMaterial({ color: newColor, specular: 0x101010 });
     }
 

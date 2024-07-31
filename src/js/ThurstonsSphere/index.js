@@ -71,6 +71,7 @@ export default class ThurstonsSphere {
 
     updateSphereMaterial(){
 
+        this.inner_sphere.material.dispose(); 
         this.inner_sphere.material = new THREE.MeshPhongMaterial({
             color: this.parameters.inner_sphere_color,
             side: THREE.FrontSide,
@@ -79,6 +80,7 @@ export default class ThurstonsSphere {
             flatShading: this.parameters.flatShading,
         });
 
+        this.outer_sphere.material.dispose();
         this.outer_sphere.material  = new THREE.MeshPhongMaterial({
             color: this.parameters.outer_sphere_color,
             side: THREE.BackSide,
@@ -87,6 +89,7 @@ export default class ThurstonsSphere {
             flatShading: this.parameters.flatShading,
         });
     
+        this.wireframe.material.dispose(); 
         this.wireframe.material = new THREE.MeshBasicMaterial({
             color: this.parameters.wireframe_color,
             wireframe: true,
@@ -113,6 +116,8 @@ export default class ThurstonsSphere {
             geometry = complete_mirror(geometry, this.parameters);
         }
         geometry.computeVertexNormals();
+
+        this.inner_sphere.geometry.dispose(); 
 
         this.inner_sphere.geometry = geometry;
         this.outer_sphere.geometry = geometry;
