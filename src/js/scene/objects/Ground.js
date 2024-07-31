@@ -11,4 +11,13 @@ export default class {
         this.plane.receiveShadow = true;
         scene.add( this.plane );
     }
+
+    changeColor(newColor){
+        this.plane.material.color = newColor;
+        this.plane.material  = new THREE.MeshPhongMaterial({ color: newColor, specular: 0x101010 });
+    }
+
+    toggleShowGround(showGround){
+        this.plane.visible = showGround;
+    }
 }

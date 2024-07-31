@@ -11,13 +11,16 @@ var scene = new THREE.Scene();
 
 
 
-// set scene background color to rgb(20, 25, 40)
-scene.background = new THREE.Color(0x34254d);
+const backgoundParameters = {
+    backgroundColor: 0x34254d,
+    floorColor: 0xa17e24,
+    showFloor: true
+}
 
+
+// set scene background color to rgb(20, 25, 40)
 scene.background = new THREE.Color( 0x34254d );
 scene.fog = new THREE.FogExp2( 0x34254d, 0.55 );
-
-
 
 // // set up the light
 const light = new THREE.PointLight(0xffffff, 10)
@@ -51,7 +54,6 @@ document.body.appendChild(renderer.domElement);
 
 // set up the orbit controls
 var orbit_controls = new OrbitControls(camera, renderer.domElement);
-orbit_controls.enablePan = false;
 
 // set up the gui for setting the parameters
 const gui = new GUI();
@@ -80,7 +82,7 @@ guiRender.add(thurstonsSphere.parameters, 'v_max', 0, 1).step(0.01);
 guiRender.add(thurstonsSphere.parameters, 'complete_mirror');
 guiRender.open();
 
-const guiMaterialFolder = gui.addFolder('Material');
+const guiMaterialFolder = gui.addFolder('Sphere Material');
 guiMaterialFolder.add(thurstonsSphere.parameters, 'material_opacity', 0, 1);
 guiMaterialFolder.add(thurstonsSphere.parameters, 'flatShading');
 guiMaterialFolder.add(thurstonsSphere.parameters, 'show_wireframe');
@@ -93,6 +95,12 @@ guiSphereColors.addColor(thurstonsSphere.parameters, 'outer_sphere_color');
 guiSphereColors.addColor(thurstonsSphere.parameters, 'wireframe_color');
 
 guiSphereColors.open();
+
+const backgroundFolder = gui.addFolder('Background');
+backgroundFolder.addColor(backgoundParameters, 'floorColor').onChange(( newColor ) => { ground.changeColor(newColor);})
+backgroundFolder.add(backgoundParameters, 'showFloor').onChange((newDisplayFlag) => {ground.toggleShowGround(newDisplayFlag)});
+
+backgroundFolder.open();
 
 gui.close();
 
