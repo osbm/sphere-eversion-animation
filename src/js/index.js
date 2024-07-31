@@ -5,23 +5,18 @@ import ThurstonsSphere from './ThurstonsSphere';
 
 import Ground from './scene/objects/Ground';
 import Lights from './scene/objects/Lights';
+import Scene from './scene/components/Scene';
 
 // set up the scene
-var scene = new THREE.Scene();
-
-
+var sceneObject = new Scene();
+var scene = sceneObject.getScene(); 
 
 const backgoundParameters = {
     backgroundColor: 0x34254d,
+    fogAmount: 0.55, 
     floorColor: 0xa17e24,
     showFloor: true
 }
-
-
-// set scene background color to rgb(20, 25, 40)
-scene.background = new THREE.Color( 0x34254d );
-scene.fog = new THREE.FogExp2( 0x34254d, 0.55 );
-
 // // set up the light
 const light = new THREE.PointLight(0xffffff, 10)
 light.position.set(10, 10, 10)
@@ -60,7 +55,7 @@ const gui = new GUI();
 
 const guiTimeFolder = gui.addFolder('Time')
 guiTimeFolder.add(thurstonsSphere.parameters, 'time', 0.0, 1.0).step(0.001).listen();
-guiTimeFolder.add(thurstonsSphere.parameters, 'speed', 1, 150).step(1);
+guiTimeFolder.add(thurstonsSphere.parameters, 'speed', 0.0, 150).step(0.1);
 guiTimeFolder.add(thurstonsSphere.parameters, 'pauseTime');
 guiTimeFolder.add(thurstonsSphere.parameters, 'automaticRotation');
 guiTimeFolder.open();
@@ -97,8 +92,10 @@ guiSphereColors.addColor(thurstonsSphere.parameters, 'wireframe_color');
 guiSphereColors.open();
 
 const backgroundFolder = gui.addFolder('Background');
-backgroundFolder.addColor(backgoundParameters, 'floorColor').onChange(( newColor ) => { ground.changeColor(newColor);})
-backgroundFolder.add(backgoundParameters, 'showFloor').onChange((newDisplayFlag) => {ground.toggleShowGround(newDisplayFlag)});
+backgroundFolder.addColor(backgoundParameters, 'backgroundColor').onChange(( newColor ) => { sceneObject.updateBackground(newColor, backgoundParameters.fogAmount) })
+backgroundFolder.add(backgoundParameters, 'fogAmount', 0, 10).step(0.01).onChange(( newFogAmount ) => { sceneObject.updateBackground(backgoundParameters.backgroundColor, newFogAmount) })
+backgroundFolder.addColor(backgoundParameters, 'floorColor').onChange(( newColor ) => { ground.changeColor(newColor) })
+backgroundFolder.add(backgoundParameters, 'showFloor').onChange((newDisplayFlag) => { ground.toggleShowGround(newDisplayFlag) });
 
 backgroundFolder.open();
 
