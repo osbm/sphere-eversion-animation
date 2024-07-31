@@ -10,14 +10,5 @@ export default class {
         this.plane.position.y = -0.15;
         this.plane.receiveShadow = true;
         scene.add( this.plane );
-        
-        this.planeInvert = new THREE.Mesh(
-            new THREE.PlaneGeometry( 16, 16 ),
-            new THREE.MeshBasicMaterial( { color: 0x111111 } )
-        );
-        this.planeInvert.rotation.x = Math.PI / 2;
-        this.planeInvert.position.y = -0.15;
-        this.planeInvert.receiveShadow = false;
-        scene.add( this.planeInvert );
     }
 }
