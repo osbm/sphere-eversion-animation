@@ -10,12 +10,20 @@ import BackgroundMusic from './scene/components/BackgroundMusic';
 
 import backgroundMusicFile from '../BackgroundMusic.mp3';
 
+import { showModal } from './infoModal';
+
 // set up the scene
 var sceneObject = new Scene();
 var scene = sceneObject.getScene(); 
 
+const aboutInfo = {
+    About(){
+        showModal(); 
+    }
+}
+
 const audioParameters = {
-    musicOn: true,
+    musicOn: false,
     musicVolume: 0.5
 }
 
@@ -66,7 +74,9 @@ console.log('Test logging!')
 var orbit_controls = new OrbitControls(camera, renderer.domElement);
 
 // set up the gui for setting the parameters
-const gui = new GUI();
+const gui = new GUI({ title: 'Menu'});
+
+gui.add(aboutInfo, 'About');
 
 const guiMusicFolder = gui.addFolder('Background Music')
 
@@ -121,7 +131,7 @@ backgroundFolder.add(backgoundParameters, 'showFloor').onChange((newDisplayFlag)
 
 backgroundFolder.open();
 
-gui.close();
+gui.open();
 
 
 // Create a simple animation loop

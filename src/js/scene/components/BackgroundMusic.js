@@ -13,7 +13,6 @@ export default class BackgroundMusic {
             this.sound.setBuffer( buffer );
             this.sound.setLoop( true );
             this.sound.setVolume( 0.5 );
-            this.sound.play();
         });
     }
 
