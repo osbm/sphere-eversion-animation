@@ -6,10 +6,18 @@ import ThurstonsSphere from './ThurstonsSphere';
 import Ground from './scene/objects/Ground';
 import Lights from './scene/objects/Lights';
 import Scene from './scene/components/Scene';
+import BackgroundMusic from './scene/components/BackgroundMusic';
+
+import backgroundMusicFile from '../BackgroundMusic.mp3';
 
 // set up the scene
 var sceneObject = new Scene();
 var scene = sceneObject.getScene(); 
+
+const audioParameters = {
+    musicOn: true,
+    musicVolume: 0.5
+}
 
 const backgoundParameters = {
     backgroundColor: 0x34254d,
@@ -17,6 +25,8 @@ const backgoundParameters = {
     floorColor: 0xa17e24,
     showFloor: true
 }
+
+
 // // set up the light
 const light = new THREE.PointLight(0xffffff, 10)
 light.position.set(10, 10, 10)
@@ -47,11 +57,23 @@ renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+const backgroundMusic  = new BackgroundMusic(camera);
+backgroundMusic.loadSound(backgroundMusicFile);
+
+console.log('Test logging!')
+
 // set up the orbit controls
 var orbit_controls = new OrbitControls(camera, renderer.domElement);
 
 // set up the gui for setting the parameters
 const gui = new GUI();
+
+const guiMusicFolder = gui.addFolder('Background Music')
+
+guiMusicFolder.add(audioParameters, 'musicOn').onChange( newFlag => { backgroundMusic.togglePlayPause(newFlag); });
+guiMusicFolder.add(audioParameters, 'musicVolume', 0.0, 1.0).step(0.1).onChange( newValue => { backgroundMusic.changeVolume(newValue); });
+
+guiMusicFolder.open()
 
 const guiTimeFolder = gui.addFolder('Time')
 guiTimeFolder.add(thurstonsSphere.parameters, 'time', 0.0, 1.0).step(0.001).listen();
