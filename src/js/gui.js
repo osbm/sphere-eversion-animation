@@ -39,7 +39,7 @@ export const setupGuiControls = ({
 
     const guiTimeFolder = gui.addFolder('Time')
     guiTimeFolder.add(thurstonsSphere.parameters, 'time', 0.0, 1.0).step(0.001).listen();
-    guiTimeFolder.add(thurstonsSphere.parameters, 'speed', 0.0, 150).step(0.1);
+    guiTimeFolder.add(thurstonsSphere.parameters, 'speed', 0.0, 500).step(0.1);
     guiTimeFolder.add(thurstonsSphere.parameters, 'pauseTime');
     guiTimeFolder.add(thurstonsSphere.parameters, 'automaticRotation');
     guiTimeFolder.open();

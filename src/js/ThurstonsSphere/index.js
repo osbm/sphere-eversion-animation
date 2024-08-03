@@ -2,13 +2,14 @@ import * as THREE from 'three';
 import { getGeometry } from "./getGeometry.js";
 import { get_geometry_from_coordinates, complete_mirror } from "./geometryHelpers.js";
 
+const clock = new THREE.Clock();
 const defaultParameters = {
     
     pauseTime: false,
     time: 0.0,
     timeForward: true,
-    speed: 5.0, 
-    num_strips: 6,
+    speed: 100, 
+    num_strips: 8,
     u_min: 0,
     u_max: 1,
     u_count: 12,
@@ -53,9 +54,9 @@ export default class ThurstonsSphere {
         this.wireframe.scale.setY(SCALE);
         this.wireframe.scale.setZ(SCALE);
 
-        this.inner_sphere.rotation.x -= Math.PI / 4;
-        this.outer_sphere.rotation.x -= Math.PI / 4;
-        this.wireframe.rotation.x -= Math.PI / 4;    
+        this.inner_sphere.rotation.x -= Math.PI / 2;
+        this.outer_sphere.rotation.x -= Math.PI / 2;
+        this.wireframe.rotation.x -= Math.PI / 2;    
 
         this.outer_sphere.castShadow = true;
         this.inner_sphere.castShadow = true;
@@ -125,15 +126,15 @@ export default class ThurstonsSphere {
     }
 
     animationTick(){
-
-        const { pauseTime, time, speed} = this.parameters;
+        const timeDelta = clock.getDelta();
+        const { pauseTime, time, speed } = this.parameters;
         if(!pauseTime)
         {
             let { timeForward } = this.parameters;
 
-            const timeDelta = (timeForward ? speed : -(speed)) * 0.0001;
+            const delta = ( (timeForward ? timeDelta : -(timeDelta)) * speed * 0.001);
             
-            let newTime = time + timeDelta;
+            let newTime = time + delta;
     
             if(newTime > 1.0){
                 timeForward = false;
@@ -151,9 +152,15 @@ export default class ThurstonsSphere {
 
 
         if (this.parameters.automaticRotation) {
-            this.inner_sphere.rotation.y += 0.01;
-            this.outer_sphere.rotation.y += 0.01;
-            this.wireframe.rotation.y += 0.01;    
+
+            const rotateAmt = timeDelta * speed * 0.005;
+
+            this.inner_sphere.rotation.x += rotateAmt;
+            this.inner_sphere.rotation.z += rotateAmt;
+            this.outer_sphere.rotation.x += rotateAmt;
+            this.outer_sphere.rotation.z += rotateAmt;
+            this.wireframe.rotation.x += rotateAmt;    
+            this.wireframe.rotation.z += rotateAmt;
         }
     }
 }
