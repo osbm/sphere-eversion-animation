@@ -6,7 +6,6 @@ import Lights from './scene/objects/Lights';
 import Scene from './scene/components/Scene';
 import BackgroundMusic from './scene/components/BackgroundMusic';
 
-import backgroundMusicFile from '../BackgroundMusic.mp3';
 import { setupGuiControls } from './gui';
 import { getCamera } from './scene/components/camera';
 import { getRenderer } from './scene/components/renderer';
@@ -27,7 +26,6 @@ const camera = getCamera();
 const renderer = getRenderer();
 
 const backgroundMusic  = new BackgroundMusic(camera);
-backgroundMusic.loadSound(backgroundMusicFile);
 
 // set up the orbit controls
 new OrbitControls(camera, renderer.domElement);
