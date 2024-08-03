@@ -9,6 +9,7 @@ import BackgroundMusic from './scene/components/BackgroundMusic';
 
 import backgroundMusicFile from '../BackgroundMusic.mp3';
 import { setupGuiControls } from './gui';
+import { getCamera } from './scene/components/camera';
 
 // set up the scene
 var sceneObject = new Scene();
@@ -27,20 +28,12 @@ thurstonsSphere.addToScene(scene);
 const groundObject = new Ground(scene);
 const lights = new Lights(scene);
 
-// set up the camera
-var camera = new THREE.PerspectiveCamera(
-    75, // fov = field of view
-    window.innerWidth / window.innerHeight, // aspect ratio
-    0.001, // this is the near clipping plane
-    1000 // this is the far clipping plane
-);
-camera.position.z = 0.25;
-camera.position.x = 0.25;
-camera.position.y = 0.10;
+const camera = getCamera(); 
 
 // set up the renderer
 var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap; 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
