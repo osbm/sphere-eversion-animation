@@ -15,18 +15,11 @@ import { getCamera } from './scene/components/camera';
 var sceneObject = new Scene();
 var scene = sceneObject.getScene(); 
 
-// // set up the light
-const light = new THREE.PointLight(0xffffff, 10)
-light.position.set(10, 10, 10)
-scene.add(light)
-const ambientLight = new THREE.AmbientLight( 0xffffff, 0.6 );
-scene.add( ambientLight );
-
 const thurstonsSphere = new ThurstonsSphere({u_count: 20, v_count: 20});
 thurstonsSphere.addToScene(scene);
 
 const groundObject = new Ground(scene);
-const lights = new Lights(scene);
+new Lights(scene);
 
 const camera = getCamera(); 
 
@@ -40,10 +33,8 @@ document.body.appendChild(renderer.domElement);
 const backgroundMusic  = new BackgroundMusic(camera);
 backgroundMusic.loadSound(backgroundMusicFile);
 
-console.log('Test logging!')
-
 // set up the orbit controls
-var orbit_controls = new OrbitControls(camera, renderer.domElement);
+new OrbitControls(camera, renderer.domElement);
 
 setupGuiControls({
     thurstonsSphere,

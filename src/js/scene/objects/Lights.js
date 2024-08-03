@@ -12,5 +12,11 @@ export default class  {
         this.spotLight.castShadow = true;
         this.spotLight.position.set( - 1, 1, 1 );
         scene.add( this.spotLight );
+
+        this.pointLight = new THREE.PointLight(0xffffff, 10)
+        this.pointLight.position.set(10, 10, 10)
+        scene.add( this.pointLight )
+        this.ambientLight = new THREE.AmbientLight( 0xffffff, 0.6 );
+        scene.add( this.ambientLight );
     }
 }
