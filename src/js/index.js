@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import ThurstonsSphere from './ThurstonsSphere';
 
@@ -10,6 +9,7 @@ import BackgroundMusic from './scene/components/BackgroundMusic';
 import backgroundMusicFile from '../BackgroundMusic.mp3';
 import { setupGuiControls } from './gui';
 import { getCamera } from './scene/components/camera';
+import { getRenderer } from './scene/components/renderer';
 
 // set up the scene
 var sceneObject = new Scene();
@@ -24,11 +24,7 @@ new Lights(scene);
 const camera = getCamera(); 
 
 // set up the renderer
-var renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap; 
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+const renderer = getRenderer();
 
 const backgroundMusic  = new BackgroundMusic(camera);
 backgroundMusic.loadSound(backgroundMusicFile);
