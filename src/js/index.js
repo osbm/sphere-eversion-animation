@@ -8,7 +8,7 @@ import BackgroundMusic from './scene/components/BackgroundMusic';
 
 import { setupGuiControls } from './gui';
 import { getCamera } from './scene/components/camera';
-import { getRenderer } from './scene/components/renderer';
+import { Renderer } from './scene/components/Renderer';
 
 // set up the scene
 var sceneObject = new Scene();
@@ -23,7 +23,8 @@ new Lights(scene);
 const camera = getCamera(); 
 
 // set up the renderer
-const renderer = getRenderer();
+const rendererObj = new Renderer();
+const renderer = rendererObj.getRenderer();
 
 const backgroundMusic  = new BackgroundMusic(camera);
 
@@ -34,7 +35,7 @@ setupGuiControls({
     thurstonsSphere,
     backgroundMusic, 
     sceneObject,
-    groundObject,
+    groundObject
 });
 
 // Create a simple animation loop
