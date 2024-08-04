@@ -3,28 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta property="og:title" content="Outside In, Thurston's sphere eversion" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://github.com/josephmfaulkner/sphere-eversion-animation/raw/main/app-preview.jpg" />
+    <meta property="og:url" content="https://josephmfaulkner.github.io/sphere-eversion-animation/" />
+    <meta property="og:description" content="An interactive visualization of Thurston's sphere eversion method. Based on the 1994 film ‘Outside In’ by The Geometry Center." />
+    
     <link rel="icon" type="image/x-icon" href="./favicon-b9rYJEps.ico">
     <title>Sphere Eversion</title>
-    <style>
-        body {
-            margin: 0;
-
-        }
-        #info {
-            position: absolute;
-            top: 20px;
-            width: 100%;
-            text-align: center;
-            z-index: 100;
-            display:block;
-            color: #fff;
-            font-weight: bold;
-            font-family: 'Courier New', Courier, monospace;
-        }
-    </style>
-  <script type="module" crossorigin src="./index-CYkaokBx.js"></script>
+  <script type="module" crossorigin src="./index-VGqyuyvj.js"></script>
+  <link rel="stylesheet" crossorigin href="./index-MKk9r_jp.css">
 </head>
 <body>
-    <div id="info">Thurston's sphere eversion algorithm <br> <a href="https://github.com/osbm/sphere-eversion-animation" target="_blank">source</a></div>
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>Thurston's sphere eversion algorithm</h2>
+          </div>
+          <div class="modal-body">
+
+            <p>
+                In 1957, mathematician Steve Smale discovered that a sphere could theoretically be turned inside out by using smooth motions and self-intersections without making tears or sharp creases; then in 1961, Arnold Shapiro found a practical way to do so. Since that time, several other methods for turning a sphere inside out have been discovered, one of which is Bill Thurston's method, invented in 1974. 
+            </p>
+            <p>
+                Thurston's method was featured in a 1994 film ‘Outside In’ by The Geometry Center at the University of Minnesota. The Geometry Center closed in 1998. 
+                This project ports the sphere eversion program to JavaScript and visualizes it using Three.js
+            </p>
+
+            <h4>Resources:</h4>
+            <ul>
+                <li>
+                    <a href="http://www.geom.uiuc.edu/" target="_blank">The Geometry Center Homepage</a>
+                </li>
+                <li>
+                    <a href="https://www.youtube.com/watch?v=OI-To1eUtuU&t=885s&ab_channel=LastGinger" target="_blank">Outside In, film by The Geometry Center (YouTube)</a>
+                </li>
+                <li>
+                    <a href="https://github.com/osbm/sphere-eversion-animation" target="_blank">Source Code (Github)</a>
+                </li>
+            </ul>
+                
+                
+            </p>
+          </div>
+        </div>
+      </div>
 </body>
 </html>

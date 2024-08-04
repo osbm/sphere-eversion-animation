@@ -2,12 +2,13 @@ import * as THREE from 'three';
 import { getGeometry } from "./getGeometry.js";
 import { get_geometry_from_coordinates, complete_mirror } from "./geometryHelpers.js";
 
+const clock = new THREE.Clock();
 const defaultParameters = {
     
     pauseTime: false,
     time: 0.0,
     timeForward: true,
-    speed: 15.0, 
+    speed: 100, 
     num_strips: 8,
     u_min: 0,
     u_max: 1,
@@ -18,9 +19,14 @@ const defaultParameters = {
     automaticRotation: false,
     material_opacity: 0.7,
     flatShading: false,
-    show_wireframe: true,
+    show_wireframe: false,
     complete_mirror: true,
+    inner_sphere_color: 0xffd44e,
+    outer_sphere_color: 0x931450,
+    wireframe_color: 0x000000
 }
+
+const SCALE = 0.1;
 
 export default class ThurstonsSphere {
 
@@ -35,6 +41,27 @@ export default class ThurstonsSphere {
 
         this.updateSphereMaterial();
         this.updateSphereGeometry();
+
+        this.inner_sphere.scale.setX(SCALE);
+        this.inner_sphere.scale.setY(SCALE);
+        this.inner_sphere.scale.setZ(SCALE);
+
+        this.outer_sphere.scale.setX(SCALE);
+        this.outer_sphere.scale.setY(SCALE);
+        this.outer_sphere.scale.setZ(SCALE);
+
+        this.wireframe.scale.setX(SCALE);
+        this.wireframe.scale.setY(SCALE);
+        this.wireframe.scale.setZ(SCALE);
+
+        this.inner_sphere.rotation.x -= Math.PI / 2;
+        this.outer_sphere.rotation.x -= Math.PI / 2;
+        this.wireframe.rotation.x -= Math.PI / 2;    
+
+        this.outer_sphere.castShadow = true;
+        this.inner_sphere.castShadow = true;
+
+
     }
 
     addToScene(scene) {
@@ -45,24 +72,27 @@ export default class ThurstonsSphere {
 
     updateSphereMaterial(){
 
-        this.inner_sphere.material = new THREE.MeshStandardMaterial({
-            color: 0x00ff00,
+        this.inner_sphere.material.dispose(); 
+        this.inner_sphere.material = new THREE.MeshPhongMaterial({
+            color: this.parameters.inner_sphere_color,
             side: THREE.FrontSide,
             transparent: true,
             opacity: this.parameters.material_opacity,
             flatShading: this.parameters.flatShading,
         });
-        
-        this.outer_sphere.material  = new THREE.MeshStandardMaterial({
-            color: 0x0000ff,
+
+        this.outer_sphere.material.dispose();
+        this.outer_sphere.material  = new THREE.MeshPhongMaterial({
+            color: this.parameters.outer_sphere_color,
             side: THREE.BackSide,
             transparent: true,
             opacity: this.parameters.material_opacity,
             flatShading: this.parameters.flatShading,
         });
     
+        this.wireframe.material.dispose(); 
         this.wireframe.material = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
+            color: this.parameters.wireframe_color,
             wireframe: true,
             opacity: this.parameters.show_wireframe ? 1 : 0,
             transparent: true,
@@ -88,21 +118,23 @@ export default class ThurstonsSphere {
         }
         geometry.computeVertexNormals();
 
+        this.inner_sphere.geometry.dispose(); 
+
         this.inner_sphere.geometry = geometry;
         this.outer_sphere.geometry = geometry;
         this.wireframe.geometry = geometry;
     }
 
     animationTick(){
-
-        const { pauseTime, time, speed} = this.parameters;
+        const timeDelta = clock.getDelta();
+        const { pauseTime, time, speed } = this.parameters;
         if(!pauseTime)
         {
             let { timeForward } = this.parameters;
 
-            const timeDelta = (timeForward ? speed : -(speed)) * 0.0001;
+            const delta = ( (timeForward ? timeDelta : -(timeDelta)) * speed * 0.001);
             
-            let newTime = time + timeDelta;
+            let newTime = time + delta;
     
             if(newTime > 1.0){
                 timeForward = false;
@@ -116,14 +148,19 @@ export default class ThurstonsSphere {
             this.parameters.timeForward = timeForward;
         }
 
-        this.updateSphereMaterial();
         this.updateSphereGeometry();
 
 
         if (this.parameters.automaticRotation) {
-            this.inner_sphere.rotation.y += 0.01;
-            this.outer_sphere.rotation.y += 0.01;
-            this.wireframe.rotation.y += 0.01;    
+
+            const rotateAmt = timeDelta * speed * 0.005;
+
+            this.inner_sphere.rotation.x += rotateAmt;
+            this.inner_sphere.rotation.z += rotateAmt;
+            this.outer_sphere.rotation.x += rotateAmt;
+            this.outer_sphere.rotation.z += rotateAmt;
+            this.wireframe.rotation.x += rotateAmt;    
+            this.wireframe.rotation.z += rotateAmt;
         }
     }
 }
